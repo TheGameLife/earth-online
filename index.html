@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 地球 Online · 角色面板</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0e1a;
+    --card-bg: #111827;
+    --card-border: #1e293b;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #6366f1;
+  }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    background-image: 
+      radial-gradient(ellipse at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(236,72,153,0.06) 0%, transparent 50%);
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header { text-align: center; padding: 30px 0 20px; }
+  .header h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .header .subtitle { color: var(--text-dim); font-size: 13px; }
+  .header .date { color: var(--text-dim); font-size: 12px; margin-top: 4px; }
+  .char-card {
+    background: linear-gradient(135deg, #1e1b4b, #1e293b);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .char-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #818cf8, #c084fc, #f472b6, #818cf8);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .char-info { flex: 1; }
+  .char-info .name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .char-info .title { color: var(--text-dim); font-size: 13px; }
+  .char-info .current-quest { 
+    margin-top: 8px; 
+    padding: 6px 12px; 
+    background: rgba(99,102,241,0.15); 
+    border-radius: 8px; 
+    font-size: 13px;
+    display: inline-block;
+  }
+  .char-info .current-quest span { color: #818cf8; }
+  .total-level {
+    text-align: center;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .total-level .num { font-size: 36px; font-weight: 800; color: #818cf8; }
+  .total-level .label { font-size: 11px; color: var(--text-dim); }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 640px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .char-card { flex-direction: column; text-align: center; }
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .stat-card .icon { font-size: 24px; margin-bottom: 8px; }
+  .stat-card .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .stat-card .level { font-size: 22px; font-weight: 800; margin: 6px 0; }
+  .stat-card .xp { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+  .xp-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .xp-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .habit-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .habit-section h2 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .habit-module { margin-bottom: 16px; }
+  .habit-module:last-child { margin-bottom: 0; }
+  .habit-module-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .habit-module-header .arrow {
+    transition: transform 0.2s;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+  .habit-module-header.collapsed .arrow { transform: rotate(-90deg); }
+  .habit-list { display: grid; gap: 6px; overflow: hidden; transition: max-height 0.3s ease; }
+  .habit-list.collapsed { max-height: 0 !important; overflow: hidden; }
+  .habit-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .habit-item:hover { background: rgba(255,255,255,0.06); }
+  .habit-check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 12px;
+  }
+  .habit-item.done .habit-check { border-color: var(--accent); background: var(--accent); }
+  .habit-item.done .habit-text { text-decoration: line-through; opacity: 0.5; }
+  .habit-item.done .habit-score { opacity: 1; }
+  .habit-text { flex: 1; font-size: 13px; }
+  .habit-score {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .score-summary {
+    background: linear-gradient(135deg, #1e1b4b, #1e293b);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .score-summary h2 { font-size: 16px; margin-bottom: 12px; }
+  .score-total {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .score-label { font-size: 13px; color: var(--text-dim); }
+  .score-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .score-item {
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .score-item .val { font-weight: 700; }
+  .reset-btn {
+    display: block;
+    margin: 0 auto 40px;
+    padding: 10px 24px;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    color: #f87171;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: rgba(239,68,68,0.25); }
+  .quest-log {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .quest-log h2 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .quest-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .quest-item:last-child { border-bottom: none; }
+  .quest-icon { font-size: 20px; }
+  .quest-info { flex: 1; }
+  .quest-info .q-name { font-size: 14px; font-weight: 600; }
+  .quest-info .q-desc { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .quest-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .quest-status.active { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .quest-status.pending { background: rgba(250,204,21,0.15); color: #fbbf24; }
+  .quest-status.future { background: rgba(148,163,184,0.15); color: #94a3b8; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🌍 地球 Online</h1>
+    <div class="subtitle">人生 RPG · 角色面板</div>
+    <div class="date" id="todayDate"></div>
+  </div>
+  <div class="char-card">
+    <div class="avatar">🧑‍💻</div>
+    <div class="char-info">
+      <div class="name">宝贝</div>
+      <div class="title">Lv<span id="totalLevel">0</span> · 地球 Online 玩家</div>
+      <div class="current-quest">🎯 当前主线：<span>重庆事业编</span></div>
+    </div>
+    <div class="total-level">
+      <div class="num" id="totalScore">0</div>
+      <div class="label">今日总分</div>
+    </div>
+  </div>
+  <div class="stats-grid" id="statsGrid"></div>
+  <div class="score-summary">
+    <h2>📊 今日得分</h2>
+    <div class="score-total" id="scoreTotal">0</div>
+    <div class="score-label">分</div>
+    <div class="score-breakdown" id="scoreBreakdown"></div>
+  </div>
+  <div class="habit-section">
+    <h2>✅ 今日习惯打卡</h2>
+    <div id="habitList"></div>
+  </div>
+  <div class="quest-log">
+    <h2>📜 主线任务</h2>
+    <div id="questList"></div>
+  </div>
+  <button class="reset-btn" onclick="resetDay()">🔄 新的一天（重置今日打卡）</button>
+</div>
+<script>
+const LEVELS = [0, 50, 150, 350, 600, 1000];
+const modules = [
+  { id: 'hp', name: '健康系统', icon: '💪', color: '#22c55e' },
+  { id: 'mp', name: '精神自由', icon: '🧘', color: '#a855f7' },
+  { id: 'gp', name: '财务自由', icon: '💰', color: '#eab308' },
+  { id: 'ap', name: '外貌管理', icon: '✨', color: '#f43f5e' },
+  { id: 'sp', name: '专业能力', icon: '📚', color: '#3b82f6' },
+  { id: 'rp', name: '关系经营', icon: '💕', color: '#ec4899' }
+];
+const habits = [
+  { mod: 'hp', text: '按饮食系统吃三餐', pts: 3 },
+  { mod: 'hp', text: '18:00前喝完2L水', pts: 1 },
+  { mod: 'hp', text: '运动（任何形式的活动）', pts: 3 },
+  { mod: 'hp', text: '23:30前入睡', pts: 2 },
+  { mod: 'hp', text: '记录今日体重', pts: 1 },
+  { mod: 'mp', text: '冥想', pts: 2 },
+  { mod: 'mp', text: '看书/听课10分钟', pts: 2 },
+  { mod: 'mp', text: '记录地球Online存档', pts: 2 },
+  { mod: 'mp', text: '小红书打卡', pts: 1 },
+  { mod: 'mp', text: '写日计划', pts: 1 },
+  { mod: 'gp', text: '记录当日支出', pts: 1 },
+  { mod: 'sp', text: '学习至少5分钟', pts: 3 },
+  { mod: 'sp', text: '按计划推进学习', pts: 2 },
+  { mod: 'ap', text: '晚间护肤', pts: 1 },
+  { mod: 'ap', text: '出门防晒+底妆', pts: 1 },
+];
+const quests = [
+  { icon: '📚', name: '考上重庆事业编', desc: '当前第一大主线', status: 'active' },
+  { icon: '💍', name: '订婚/结婚推进', desc: '2026.3.9 他答应了，持续经营', status: 'active' },
+  { icon: '👁️', name: '近视手术', desc: '2027年5月前，需定投≥5万', status: 'pending' },
+  { icon: '💎', name: '定投达5万', desc: '30岁前目标', status: 'pending' },
+  { icon: '🚀', name: '自由的价格', desc: '45岁前实现', status: 'future' }
+];
+function getDateKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function loadData() {
+  try { const raw = localStorage.getItem('earth-online'); return raw ? JSON.parse(raw) : { xp: {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0}, daily: {} }; } catch(e) { return { xp: {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0}, daily: {} }; }
+}
+function saveData(data) { localStorage.setItem('earth-online', JSON.stringify(data)); }
+function getDailyKey() { return 'day_' + getDateKey(); }
+function render() {
+  const data = loadData();
+  const daily = data.daily[getDailyKey()] || {};
+  const now = new Date();
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('todayDate').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} 星期${days[now.getDay()]}`;
+  const grid = document.getElementById('statsGrid');
+  grid.innerHTML = '';
+  let totalScore = 0;
+  let breakdown = [];
+  modules.forEach(m => {
+    const xp = data.xp[m.id] || 0;
+    let lvl = 0;
+    for (let i = LEVELS.length - 1; i >= 0; i--) { if (xp >= LEVELS[i]) { lvl = i; break; } }
+    const nextTarget = lvl < LEVELS.length - 1 ? LEVELS[lvl + 1] : LEVELS[lvl];
+    const prevTarget = LEVELS[lvl];
+    const progress = lvl < LEVELS.length - 1 ? Math.min(((xp - prevTarget) / (nextTarget - prevTarget)) * 100, 100) : 100;
+    const modHabits = habits.filter(h => h.mod === m.id);
+    let todayPts = 0;
+    modHabits.forEach((h, i) => { if (daily[`${m.id}_${i}`]) todayPts += h.pts; });
+    totalScore += todayPts;
+    breakdown.push({ icon: m.icon, pts: todayPts, color: m.color });
+    grid.innerHTML += `<div class="stat-card"><div class="icon">${m.icon}</div><div class="name">${m.name}</div><div class="level" style="color:${m.color}">Lv ${lvl}</div><div class="xp">${xp} / ${nextTarget} XP</div><div class="xp-bar"><div class="xp-bar-fill" style="width:${progress}%;background:${m.color}"></div></div></div>`;
+  });
+  let totalLvl = 0;
+  modules.forEach(m => {
+    const xp = data.xp[m.id] || 0;
+    for (let i = LEVELS.length - 1; i >= 0; i--) { if (xp >= LEVELS[i]) { totalLvl += i; break; } }
+  });
+  document.getElementById('totalScore').textContent = totalScore;
+  document.getElementById('totalLevel').textContent = totalLvl;
+  const bd = document.getElementById('scoreBreakdown');
+  bd.innerHTML = breakdown.map(b => `<div class="score-item">${b.icon} <span class="val" style="color:${b.color}">${b.pts}</span>分</div>`).join('');
+  const hl = document.getElementById('habitList');
+  hl.innerHTML = '';
+  modules.forEach(m => {
+    const modHabits = habits.filter(h => h.mod === m.id);
+    if (modHabits.length === 0) return;
+    const modKey = 'mod_' + m.id;
+    const collapsed = daily[modKey + '_collapsed'] ? 'collapsed' : '';
+    let html = `<div class="habit-module">`;
+    html += `<div class="habit-module-header ${collapsed}" onclick="toggleModule('${m.id}')"><span class="arrow">▼</span><span>${m.icon}</span><span style="color:${m.color}">${m.name}</span></div>`;
+    html += `<div class="habit-list ${collapsed}" id="hl_${m.id}">`;
+    modHabits.forEach((h, i) => {
+      const key = `${m.id}_${i}`;
+      const done = daily[key] ? 'done' : '';
+      html += `<div class="habit-item ${done}" onclick="toggleHabit('${m.id}', ${i})"><div class="habit-check">${done ? '✓' : ''}</div><div class="habit-text">${h.text}</div><div class="habit-score">+${h.pts}</div></div>`;
+    });
+    html += `</div></div>`;
+    hl.innerHTML += html;
+  });
+  const ql = document.getElementById('questList');
+  ql.innerHTML = quests.map(q => `<div class="quest-item"><div class="quest-icon">${q.icon}</div><div class="quest-info"><div class="q-name">${q.name}</div><div class="q-desc">${q.desc}</div></div><div class="quest-status ${q.status}">${q.status === 'active' ? '进行中' : q.status === 'pending' ? '筹备中' : '远期'}</div></div>`).join('');
+}
+function toggleHabit(modId, idx) {
+  const data = loadData();
+  const key = getDailyKey();
+  if (!data.daily[key]) data.daily[key] = {};
+  const dKey = `${modId}_${idx}`;
+  data.daily[key][dKey] = !data.daily[key][dKey];
+  const modHabits = habits.filter(hh => hh.mod === modId);
+  const habit = modHabits[idx];
+  if (!habit) return;
+  if (data.daily[key][dKey]) {
+    data.xp[modId] = (data.xp[modId] || 0) + habit.pts;
+  } else {
+    data.xp[modId] = Math.max(0, (data.xp[modId] || 0) - habit.pts);
+  }
+  saveData(data);
+  render();
+}
+function toggleModule(modId) {
+  const data = loadData();
+  const key = getDailyKey();
+  if (!data.daily[key]) data.daily[key] = {};
+  const k = `mod_${modId}_collapsed`;
+  data.daily[key][k] = !data.daily[key][k];
+  saveData(data);
+  render();
+}
+function resetDay() {
+  if (!confirm('确认重置今日所有打卡？累计XP不会清零。')) return;
+  const data = loadData();
+  data.daily[getDailyKey()] = {};
+  saveData(data);
+  render();
+}
+render();
+</script>
+</body>
+</html>
