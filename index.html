@@ -524,6 +524,14 @@
         <option value="growth">🟢 成长</option>
       </select>
     </div>
+    <div class="modal-q" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+      <label>📡 云端同步</label>
+      <div id="syncStatus" style="font-size:11px;color:var(--text-dim);margin-bottom:6px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="modal-save" onclick="syncFromCloud()" id="syncPullBtn" style="flex:1">⬇️ 拉取云端</button>
+        <button class="modal-save" onclick="syncToCloud()" id="syncPushBtn" style="flex:1">⬆️ 推送云端</button>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeSettings()">取消</button>
       <button class="modal-save" onclick="saveSettings()">保存</button>
@@ -533,6 +541,10 @@
 
 <script>
 // ========== 配置 ==========
+const SYNC_CONFIG = {
+  binId: '',
+  apiKey: ''
+};
 const LEVELS = [0, 50, 150, 350, 600, 1000];
 const modules = [
   { id: 'hp', name: '健康', icon: '💪', color: '#22c55e' },
@@ -911,12 +923,31 @@ function getWeekKey() {
   return `w_${monday.getFullYear()}_${String(monday.getMonth()+1).padStart(2,'0')}_${String(monday.getDate()).padStart(2,'0')}`;
 }
 
+let _cachedData = null;
 function loadData() {
+  if (_cachedData) return _cachedData;
   try {
     const raw = localStorage.getItem('earth-online-v2');
-    if (raw) { const d = JSON.parse(raw); if (d.meta?.version === '2.0') return d; }
+    if (raw) { const d = JSON.parse(raw); if (d.meta?.version === '2.0') { _cachedData = d; return d; } }
   } catch(e) {}
   return defaultData();
+}
+async function loadWithCloudSync() {
+  const local = loadData();
+  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) { render(); return; }
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
+      headers: { 'X-Master-Key': SYNC_CONFIG.apiKey }
+    });
+    if (!res.ok) { render(); return; }
+    const { record } = await res.json();
+    if (!record?.meta?.version) { render(); return; }
+    if ((record.updatedAt || 0) > (local.updatedAt || 0)) {
+      _cachedData = record;
+      localStorage.setItem('earth-online-v2', JSON.stringify(record));
+    }
+  } catch(e) {}
+  render();
 }
 function defaultData() {
   return {
@@ -927,10 +958,65 @@ function defaultData() {
     phaseHistory: [{ phase: 'survival', startedAt: getDateKey(), note: '系统启动' }],
     logs: [{ date: getDateKey(), text: '🌍 创建了 Earth Online 系统' }],
     reviews: [],
-    meta: { version: '2.0', createdAt: getDateKey() }
+    meta: { version: '2.0', createdAt: getDateKey() },
+    updatedAt: Date.now()
   };
 }
-function saveData(data) { localStorage.setItem('earth-online-v2', JSON.stringify(data)); }
+function saveData(data) {
+  data.updatedAt = Date.now();
+  localStorage.setItem('earth-online-v2', JSON.stringify(data));
+  syncToCloudSilent(data);
+}
+
+// ========== 云端同步 ==========
+async function syncToCloud(data) {
+  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
+    document.getElementById('syncStatus').textContent = '未配置云端存储，请在代码 SYNC_CONFIG 中填入 binId 和 apiKey';
+    return;
+  }
+  try {
+    document.getElementById('syncStatus').textContent = '推送中...';
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': SYNC_CONFIG.apiKey },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error(res.status);
+    document.getElementById('syncStatus').textContent = `已推送 ${getDateKey()}`;
+  } catch(e) {
+    document.getElementById('syncStatus').textContent = `推送失败: ${e.message}`;
+  }
+}
+async function syncFromCloud() {
+  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
+    document.getElementById('syncStatus').textContent = '未配置云端存储，请在代码 SYNC_CONFIG 中填入 binId 和 apiKey';
+    return;
+  }
+  try {
+    document.getElementById('syncStatus').textContent = '拉取中...';
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
+      headers: { 'X-Master-Key': SYNC_CONFIG.apiKey }
+    });
+    if (!res.ok) throw new Error(res.status);
+    const { record } = await res.json();
+    if (!record?.meta?.version) throw new Error('无效数据');
+    if (!confirm('云端数据将覆盖本地数据，确定继续？')) { document.getElementById('syncStatus').textContent = '已取消'; return; }
+    localStorage.setItem('earth-online-v2', JSON.stringify(record));
+    addLog('⬇️ 从云端拉取了数据');
+    document.getElementById('syncStatus').textContent = `已拉取 ${getDateKey()}`;
+    render();
+  } catch(e) {
+    document.getElementById('syncStatus').textContent = `拉取失败: ${e.message}`;
+  }
+}
+function syncToCloudSilent(data) {
+  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) return;
+  fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': SYNC_CONFIG.apiKey },
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
 function addLog(text) {
   const data = loadData();
   data.logs = data.logs || [];
@@ -1015,6 +1101,7 @@ function calcInvestTotal(data) {
 
 // ========== 渲染 ==========
 function render() {
+  _cachedData = null;
   const data = loadData();
   const dk = getDateKey();
   if (!data.daily[dk]) {
@@ -1319,7 +1406,15 @@ function saveReview() {
 }
 
 // ========== 设置 ==========
-function toggleSettings() { document.getElementById('settingsModal').classList.remove('hidden'); }
+function toggleSettings() {
+  document.getElementById('settingsModal').classList.remove('hidden');
+  const data = loadData();
+  const lastSync = data.updatedAt ? new Date(data.updatedAt).toLocaleString('zh-CN') : '未知';
+  const configured = SYNC_CONFIG.binId && SYNC_CONFIG.apiKey;
+  document.getElementById('syncStatus').textContent = configured
+    ? `上次同步: ${lastSync} · 已配置`
+    : `未配置 · 请在代码中填写 SYNC_CONFIG 的 binId 和 apiKey`;
+}
 function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
 function saveSettings() {
   const newPhase = document.getElementById('settingsPhase').value;
@@ -1373,7 +1468,7 @@ setInterval(() => {
   if (getDateKey() !== lastDate) { lastDate = getDateKey(); render(); }
 }, 60000);
 
-render();
+loadWithCloudSync();
 </script>
 </body>
 </html>

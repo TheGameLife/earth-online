@@ -10,7 +10,8 @@
 - **定投追踪**：记录每日投入，可视化目标进度
 - **能量日记**：记录让你"紧"和"松"的事，识别情绪触发源
 - **周复盘**：每周回顾，调整习惯方向
-- **数据本地存储**：所有数据存在浏览器 localStorage，支持导出/导入备份
+- **跨设备同步**：通过 JSONBin.io 云端存储，手机电脑数据实时同步
+- **数据本地存储**：断网也能用，恢复网络后自动同步，支持导出/导入备份
 
 ## 使用
 
@@ -29,6 +30,20 @@
 ## 技术
 
 纯 HTML + CSS + JavaScript 单文件应用，无需安装、无需后端。
+
+## 云端同步配置
+
+1. 去 [jsonbin.io](https://jsonbin.io) 注册账号
+2. 创建一个 bin，把现有数据导入（复制 localStorage 的 JSON）
+3. 获取 bin ID 和 API Key
+4. 打开 `index.html`，找到顶部 `SYNC_CONFIG` 填入：
+   ```javascript
+   const SYNC_CONFIG = {
+     binId: '你的bin ID',
+     apiKey: '你的API key'
+   };
+   ```
+5. 推送代码，所有设备刷新页面即可同步
 
 ## 数据备份
 
