@@ -7,172 +7,60 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --bg: #0a0e1a;
-    --card-bg: #111827;
-    --card-border: #1e293b;
-    --text: #e2e8f0;
-    --text-dim: #94a3b8;
-    --accent: #6366f1;
-    --red: #ef4444;
-    --yellow: #eab308;
-    --green: #22c55e;
-    --pink: #ec4899;
-    --blue: #3b82f6;
+    --bg: #0a0e1a; --card-bg: #111827; --card-border: #1e293b;
+    --text: #e2e8f0; --text-dim: #94a3b8; --accent: #6366f1;
+    --red: #ef4444; --yellow: #eab308; --green: #22c55e; --pink: #ec4899; --blue: #3b82f6;
   }
   body {
     font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 20px 12px;
-    background-image:
-      radial-gradient(ellipse at 10% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 80%, rgba(236,72,153,0.04) 0%, transparent 50%);
+    background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px 12px;
+    background-image: radial-gradient(ellipse at 10% 20%, rgba(99,102,241,0.06) 0%, transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(236,72,153,0.04) 0%, transparent 50%);
   }
   .container { max-width: 680px; margin: 0 auto; }
-
-  /* === 顶栏 === */
   .top-bar { text-align: center; padding: 24px 0 16px; }
-  .top-bar h1 {
-    font-size: 22px;
-    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 2px;
-  }
+  .top-bar h1 { font-size: 22px; background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2px; }
   .top-bar .date { color: var(--text-dim); font-size: 12px; }
-
-  /* === 总分卡片 === */
-  .score-hero {
-    background: linear-gradient(135deg, #1e1b4b, #1e293b);
-    border: 1px solid #334155;
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .score-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #818cf8, #c084fc, #f472b6, #818cf8);
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-  }
-  @keyframes shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-  .score-hero-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .score-hero-left { text-align: left; }
+  .score-hero { background: linear-gradient(135deg, #1e1b4b, #1e293b); border: 1px solid #334155; border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; position: relative; overflow: hidden; }
+  .score-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #818cf8, #c084fc, #f472b6, #818cf8); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
+  @keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  .score-hero-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .score-hero-left .label { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
   .score-hero-left .big { font-size: 42px; font-weight: 900; color: #818cf8; line-height: 1; }
   .score-hero-left .unit { font-size: 14px; color: var(--text-dim); margin-left: 4px; }
   .score-hero-right { text-align: right; flex-shrink: 0; }
-  .identity-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    background: rgba(99,102,241,0.15);
-    border: 1px solid rgba(99,102,241,0.3);
-    border-radius: 20px;
-    font-size: 13px;
-    color: #a5b4fc;
-    margin-bottom: 8px;
-  }
-  .phase-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-right: 4px;
-  }
+  .identity-badge { display: inline-block; padding: 6px 14px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; font-size: 13px; color: #a5b4fc; margin-bottom: 8px; }
+  .phase-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 4px; }
   .phase-tag.red { background: rgba(239,68,68,0.15); color: #f87171; }
   .phase-tag.yellow { background: rgba(234,179,8,0.15); color: #fbbf24; }
   .phase-tag.green { background: rgba(34,197,94,0.15); color: #4ade80; }
-
-  .progress-bar {
-    margin-top: 14px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 6px;
-    height: 8px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 6px;
-    transition: width 0.6s ease;
-    background: linear-gradient(90deg, #818cf8, #c084fc);
-  }
+  .progress-bar { margin-top: 14px; background: rgba(255,255,255,0.06); border-radius: 6px; height: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; background: linear-gradient(90deg, #818cf8, #c084fc); }
   .progress-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; text-align: right; }
-
-  /* === 统计条 === */
   .stats-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .stat-pill {
-    flex: 1; min-width: 80px; background: var(--card-bg);
-    border: 1px solid var(--card-border); border-radius: 10px;
-    padding: 10px 12px; text-align: center;
-  }
+  .stat-pill { flex: 1; min-width: 80px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 10px 12px; text-align: center; }
   .stat-pill .num { font-size: 18px; font-weight: 800; }
   .stat-pill .lbl { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
-
-  /* === 六维属性 === */
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 8px; margin-bottom: 16px;
-  }
-  @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .score-hero-row { flex-direction: column; align-items: flex-start; }
-    .score-hero-right { text-align: left; }
-  }
-  .stat-card {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 10px; padding: 12px;
-  }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  @media (max-width: 480px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .score-hero-row { flex-direction: column; align-items: flex-start; } .score-hero-right { text-align: left; } }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; }
   .stat-card .icon { font-size: 18px; margin-bottom: 4px; }
   .stat-card .name { font-size: 12px; font-weight: 600; }
   .stat-card .level { font-size: 18px; font-weight: 800; margin: 4px 0 2px; }
   .stat-card .xp { font-size: 10px; color: var(--text-dim); }
   .xp-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 6px; }
   .xp-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-
-  /* === 趋势面板 === */
-  .trend-panel {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 12px; padding: 14px; margin-bottom: 16px;
-  }
-  .trend-panel h3 { font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .trend-panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+  .trend-panel h3 { font-size: 13px; margin-bottom: 10px; }
   .trend-wrapper { display: flex; align-items: flex-end; gap: 4px; height: 60px; }
   .trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
-  .trend-bar {
-    flex: 1; width: 100%; background: rgba(99,102,241,0.3);
-    border-radius: 3px 3px 0 0; min-height: 4px;
-    transition: height 0.3s ease;
-  }
+  .trend-bar { flex: 1; width: 100%; background: rgba(99,102,241,0.3); border-radius: 3px 3px 0 0; min-height: 4px; transition: height 0.3s; }
   .trend-bar.today { background: var(--accent); }
   .trend-bar-label { font-size: 9px; color: var(--text-dim); margin-top: 4px; }
-
-  /* === 定投 === */
-  .invest-section {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 12px; padding: 14px; margin-bottom: 16px;
-  }
-  .invest-section h3 { font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .invest-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+  .invest-section h3 { font-size: 13px; margin-bottom: 10px; }
   .invest-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .invest-input-row label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
-  .invest-input {
-    width: 100px; padding: 6px 10px; background: rgba(255,255,255,0.06);
-    border: 1px solid #334155; border-radius: 6px; color: var(--text);
-    font-size: 14px; font-weight: 600; text-align: right; outline: none;
-  }
+  .invest-input { width: 100px; padding: 6px 10px; background: rgba(255,255,255,0.06); border: 1px solid #334155; border-radius: 6px; color: var(--text); font-size: 14px; font-weight: 600; text-align: right; outline: none; }
   .invest-input:focus { border-color: var(--yellow); }
   .invest-input::placeholder { color: #475569; }
   .invest-goals { display: flex; flex-direction: column; gap: 6px; }
@@ -181,289 +69,138 @@
   .invest-goal .goal-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
   .invest-goal .goal-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
   .invest-goal .goal-val { width: 40px; text-align: right; color: var(--text-dim); }
-
-  /* === 习惯区 === */
-  .habit-section {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 12px; padding: 14px; margin-bottom: 12px;
-  }
+  .habit-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
   .habit-section.locked { opacity: 0.35; pointer-events: none; }
-  .habit-section-header {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-  }
-  .habit-section .badge {
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
-  }
+  .habit-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .habit-section .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
   .habit-section .badge.red { background: rgba(239,68,68,0.15); color: #f87171; }
   .habit-section .badge.yellow { background: rgba(234,179,8,0.15); color: #fbbf24; }
   .habit-section .badge.green { background: rgba(34,197,94,0.15); color: #4ade80; }
   .habit-section .title { font-size: 13px; font-weight: 700; }
-
-  .habit-item {
-    display: flex; align-items: flex-start; gap: 8px;
-    padding: 10px; background: rgba(255,255,255,0.02);
-    border-radius: 8px; margin-bottom: 4px; cursor: pointer;
-    transition: background 0.15s;
-  }
+  .habit-item { display: flex; align-items: flex-start; gap: 8px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 4px; cursor: pointer; transition: background 0.15s; }
   .habit-item:hover { background: rgba(255,255,255,0.05); }
   .habit-item.weekly { border-left: 2px dashed rgba(255,255,255,0.08); }
   .habit-item.done { opacity: 0.7; }
   .habit-item.done .habit-check { border-color: var(--accent); background: var(--accent); }
   .habit-item.done .habit-main { text-decoration: line-through; opacity: 0.4; }
-
-  .habit-check {
-    width: 20px; height: 20px; border-radius: 5px;
-    border: 2px solid #475569; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0; font-size: 11px;
-    transition: all 0.2s; margin-top: 1px;
-  }
+  .habit-check { width: 20px; height: 20px; border-radius: 5px; border: 2px solid #475569; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; transition: all 0.2s; margin-top: 1px; }
   .habit-main { flex: 1; min-width: 0; }
   .habit-label { font-size: 12px; font-weight: 500; }
   .habit-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
   .habit-pts { font-size: 10px; color: var(--accent); font-weight: 600; }
   .habit-freq { font-size: 9px; padding: 1px 5px; border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--text-dim); }
   .habit-hint { font-size: 10px; color: var(--text-dim); }
-
-  .habit-detail {
-    display: none;
-    margin-top: 10px;
-    padding: 12px;
-    background: rgba(99,102,241,0.06);
-    border-radius: 8px;
-    border: 1px solid rgba(99,102,241,0.15);
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--text-dim);
-  }
+  .habit-detail { display: none; margin-top: 10px; padding: 12px; background: rgba(99,102,241,0.06); border-radius: 8px; border: 1px solid rgba(99,102,241,0.15); font-size: 12px; line-height: 1.7; color: var(--text-dim); }
   .habit-detail.show { display: block; }
-  .habit-detail h4 {
-    font-size: 12px; font-weight: 700; color: var(--text);
-    margin-bottom: 6px;
-  }
+  .habit-detail h4 { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .habit-detail p { margin-bottom: 6px; }
   .habit-detail ul { padding-left: 16px; margin-bottom: 6px; }
   .habit-detail li { margin-bottom: 3px; }
-  .habit-detail .tip {
-    padding: 6px 10px;
-    background: rgba(234,179,8,0.08);
-    border-radius: 6px;
-    border-left: 3px solid var(--yellow);
-    margin-top: 8px;
-    font-size: 11px;
-  }
-  .habit-detail .expand-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    color: var(--accent);
-    cursor: pointer;
-    margin-top: 4px;
-  }
-  .habit-detail .expand-btn:hover { text-decoration: underline; }
-
-  /* === 能量日记 === */
-  .energy-section {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 12px; padding: 14px; margin-bottom: 12px;
-  }
+  .habit-detail .tip { padding: 6px 10px; background: rgba(234,179,8,0.08); border-radius: 6px; border-left: 3px solid var(--yellow); margin-top: 8px; font-size: 11px; }
+  .habit-expand-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--accent); cursor: pointer; margin-top: 4px; padding: 2px 4px; border-radius: 4px; }
+  .habit-expand-btn:hover { background: rgba(99,102,241,0.1); }
+  .energy-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
   .energy-section h3 { font-size: 13px; margin-bottom: 8px; }
   .energy-row { margin-bottom: 8px; }
   .energy-row label { font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 3px; }
-  .energy-input {
-    width: 100%; padding: 6px 10px; background: rgba(255,255,255,0.06);
-    border: 1px solid #334155; border-radius: 6px; color: var(--text);
-    font-size: 12px; outline: none; resize: none;
-  }
+  .energy-input { width: 100%; padding: 6px 10px; background: rgba(255,255,255,0.06); border: 1px solid #334155; border-radius: 6px; color: var(--text); font-size: 12px; outline: none; resize: none; }
   .energy-input:focus { border-color: var(--accent); }
-
-  /* === 存档日志 === */
-  .log-section {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 12px; padding: 14px; margin-bottom: 12px;
-  }
+  .log-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
   .log-section h3 { font-size: 13px; margin-bottom: 10px; }
   .log-timeline { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
   .log-entry { display: flex; gap: 8px; font-size: 11px; }
   .log-entry .log-date { color: var(--text-dim); white-space: nowrap; min-width: 70px; }
   .log-entry .log-dot { color: var(--accent); }
-  .log-entry .log-text { color: var(--text); }
-
-  /* === 告警 === */
-  .alert-box {
-    background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2);
-    border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
-    font-size: 12px; display: none;
-  }
+  .alert-box { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 12px; display: none; }
   .alert-box.show { display: block; }
   .alert-box.warn { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
-
-  /* === 底部操作 === */
-  .footer-actions {
-    display: flex; gap: 8px; justify-content: center; margin: 20px 0 30px; flex-wrap: wrap;
-  }
-  .footer-btn {
-    padding: 8px 16px; border-radius: 8px; font-size: 12px; cursor: pointer;
-    border: 1px solid; background: transparent; transition: background 0.15s;
-  }
+  .footer-actions { display: flex; gap: 8px; justify-content: center; margin: 20px 0 80px; flex-wrap: wrap; }
+  .footer-btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid; background: transparent; transition: background 0.15s; }
   .btn-export { border-color: rgba(99,102,241,0.3); color: #818cf8; }
   .btn-export:hover { background: rgba(99,102,241,0.1); }
   .btn-review { border-color: rgba(34,197,94,0.3); color: #4ade80; }
   .btn-review:hover { background: rgba(34,197,94,0.1); }
+  .btn-ai { border-color: rgba(168,85,247,0.3); color: #c084fc; }
+  .btn-ai:hover { background: rgba(168,85,247,0.1); }
   .btn-settings { border-color: rgba(148,163,184,0.3); color: #94a3b8; }
   .btn-settings:hover { background: rgba(148,163,184,0.1); }
-
-  .world-running {
-    text-align: center; padding: 8px; font-size: 11px; color: var(--text-dim);
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    margin-bottom: 12px;
-  }
-  .world-running .pulse {
-    width: 6px; height: 6px; background: var(--green); border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
-  }
-
-  /* === 周复盘弹窗 === */
-  .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7); z-index: 100;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-  }
-  .modal-overlay.hidden { display: none; }
-  .modal-box {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 16px; padding: 24px; max-width: 400px; width: 100%;
-    max-height: 80vh; overflow-y: auto;
-  }
-  .modal-box h2 { font-size: 16px; margin-bottom: 16px; }
-  .modal-q { margin-bottom: 14px; }
-  .modal-q label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 4px; }
-  .modal-q select, .modal-q input[type=text], .modal-q input[type=number] {
-    width: 100%; padding: 8px; background: rgba(255,255,255,0.06);
-    border: 1px solid #334155; border-radius: 6px; color: var(--text);
-    font-size: 12px; outline: none;
-  }
-  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-  .modal-actions button {
-    flex: 1; padding: 10px; border-radius: 8px; font-size: 13px;
-    cursor: pointer; border: 1px solid; background: transparent;
-  }
-  .modal-save { border-color: var(--accent); color: var(--accent); }
-  .modal-cancel { border-color: #475569; color: var(--text-dim); }
-
-  /* === 主线任务 === */
-  .quest-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
+  .world-running { text-align: center; padding: 8px; font-size: 11px; color: var(--text-dim); display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; }
+  .world-running .pulse { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+  .quest-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .quest-item:last-child { border-bottom: none; }
   .quest-icon { font-size: 16px; }
   .quest-name { font-size: 12px; font-weight: 600; }
   .quest-desc { font-size: 10px; color: var(--text-dim); }
+  .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.hidden { display: none; }
+  .modal-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; max-height: 80vh; overflow-y: auto; }
+  .modal-box h2 { font-size: 16px; margin-bottom: 16px; }
+  .modal-q { margin-bottom: 14px; }
+  .modal-q label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 4px; }
+  .modal-q select, .modal-q input[type=text], .modal-q input[type=number] { width: 100%; padding: 8px; background: rgba(255,255,255,0.06); border: 1px solid #334155; border-radius: 6px; color: var(--text); font-size: 12px; outline: none; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid; background: transparent; }
+  .modal-save { border-color: var(--accent); color: var(--accent); }
+  .modal-cancel { border-color: #475569; color: var(--text-dim); }
+  .ai-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); border: none; cursor: pointer; z-index: 50; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; box-shadow: 0 4px 20px rgba(99,102,241,0.4); transition: transform 0.2s; }
+  .ai-chat-btn:hover { transform: scale(1.08); }
+  .ai-chat-btn .notif-dot { position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; border: 2px solid var(--bg); display: none; }
+  .ai-chat-panel { position: fixed; bottom: 80px; right: 20px; width: 360px; max-height: 520px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; z-index: 50; display: none; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.5); overflow: hidden; }
+  .ai-chat-panel.show { display: flex; }
+  .ai-chat-header { padding: 14px 16px; background: linear-gradient(135deg, #1e1b4b, #1e293b); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
+  .ai-chat-header .title { font-size: 14px; font-weight: 700; }
+  .ai-chat-header .close-btn { cursor: pointer; font-size: 18px; color: var(--text-dim); background: none; border: none; }
+  .ai-chat-setup { padding: 10px 16px; background: rgba(168,85,247,0.06); border-bottom: 1px solid var(--card-border); font-size: 11px; color: var(--text-dim); display: flex; gap: 6px; align-items: center; }
+  .ai-chat-setup input { flex: 1; padding: 5px 8px; background: rgba(255,255,255,0.06); border: 1px solid #334155; border-radius: 4px; color: var(--text); font-size: 11px; outline: none; }
+  .ai-chat-setup input:focus { border-color: #a855f7; }
+  .ai-chat-setup .save-btn { padding: 4px 10px; background: var(--accent); border: none; border-radius: 4px; color: white; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .ai-chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 300px; }
+  .ai-msg { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 12px; line-height: 1.6; word-break: break-word; }
+  .ai-msg.bot { align-self: flex-start; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); border-bottom-left-radius: 4px; }
+  .ai-msg.user { align-self: flex-end; background: rgba(255,255,255,0.08); border-bottom-right-radius: 4px; }
+  .ai-msg.loading { color: var(--text-dim); font-style: italic; }
+  .ai-chat-input { padding: 10px; border-top: 1px solid var(--card-border); display: flex; gap: 6px; }
+  .ai-chat-input input { flex: 1; padding: 8px 10px; background: rgba(255,255,255,0.06); border: 1px solid #334155; border-radius: 8px; color: var(--text); font-size: 12px; outline: none; }
+  .ai-chat-input input:focus { border-color: var(--accent); }
+  .ai-chat-input button { padding: 8px 14px; background: var(--accent); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 12px; }
+  .ai-chat-input button:disabled { opacity: 0.4; }
+  @media (max-width: 480px) { .ai-chat-panel { width: calc(100vw - 24px); right: 12px; bottom: 72px; max-height: 70vh; } }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="top-bar">
-    <h1>🌍 Earth Online</h1>
-    <div class="date" id="todayDate"></div>
-  </div>
-
-  <div class="world-running">
-    <span class="pulse"></span>
-    <span>地球持续运转中 · 数据永久保存 · 系统随你进化</span>
-  </div>
-
-  <!-- 告警 -->
+  <div class="top-bar"><h1>🌍 Earth Online</h1><div class="date" id="todayDate"></div></div>
+  <div class="world-running"><span class="pulse"></span><span>地球持续运转中 · 数据永久保存 · 系统随你进化</span></div>
   <div class="alert-box" id="alertBox"></div>
-
-  <!-- 总分卡片 -->
   <div class="score-hero">
     <div class="score-hero-row">
-      <div class="score-hero-left">
-        <div class="label">累计总分</div>
-        <div><span class="big" id="totalScore">0</span><span class="unit">分</span></div>
-      </div>
-      <div class="score-hero-right">
-        <div class="identity-badge" id="identityBadge">🌱 开始的人</div>
-        <div><span class="phase-tag red" id="phaseTag">🔴 生存</span></div>
-      </div>
+      <div class="score-hero-left"><div class="label">累计总分</div><div><span class="big" id="totalScore">0</span><span class="unit">分</span></div></div>
+      <div class="score-hero-right"><div class="identity-badge" id="identityBadge">🌱 开始的人</div><div><span class="phase-tag red" id="phaseTag">🔴 生存</span></div></div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="phaseProgress"></div></div>
     <div class="progress-label" id="phaseLabel">距下一阶段还差 -- 分</div>
   </div>
-
-  <!-- 统计条 -->
   <div class="stats-row">
-    <div class="stat-pill">
-      <div class="num" id="streakCount" style="color:var(--yellow)">0</div>
-      <div class="lbl">🔥 连续天</div>
-    </div>
-    <div class="stat-pill">
-      <div class="num" id="bestStreak" style="color:var(--green)">0</div>
-      <div class="lbl">🏆 最长纪录</div>
-    </div>
-    <div class="stat-pill">
-      <div class="num" id="daysActive" style="color:var(--accent)">0</div>
-      <div class="lbl">📅 活跃天数</div>
-    </div>
+    <div class="stat-pill"><div class="num" id="streakCount" style="color:var(--yellow)">0</div><div class="lbl">🔥 连续天</div></div>
+    <div class="stat-pill"><div class="num" id="bestStreak" style="color:var(--green)">0</div><div class="lbl">🏆 最长纪录</div></div>
+    <div class="stat-pill"><div class="num" id="daysActive" style="color:var(--accent)">0</div><div class="lbl">📅 活跃天数</div></div>
   </div>
-
-  <!-- 趋势面板 -->
-  <div class="trend-panel">
-    <h3>📈 近7天趋势</h3>
-    <div class="trend-wrapper" id="trendChart"></div>
-  </div>
-
-  <!-- 六维属性 -->
+  <div class="trend-panel"><h3>📈 近7天趋势</h3><div class="trend-wrapper" id="trendChart"></div></div>
   <div class="stats-grid" id="statsGrid"></div>
-
-  <!-- 定投 -->
   <div class="invest-section">
     <h3>💰 定投</h3>
-    <div class="invest-input-row">
-      <label>今日投入</label>
-      <input type="number" class="invest-input" id="investInput" placeholder="0" min="0" step="10">
-      <span style="font-size:12px;color:var(--text-dim)">元</span>
-    </div>
+    <div class="invest-input-row"><label>今日投入</label><input type="number" class="invest-input" id="investInput" placeholder="0" min="0" step="10"><span style="font-size:12px;color:var(--text-dim)">元</span></div>
     <div class="invest-goals" id="investGoals"></div>
   </div>
-
-  <!-- 习惯区 -->
   <div id="layersContainer"></div>
-
-  <!-- 能量日记 -->
   <div class="energy-section">
     <h3>📝 能量日记</h3>
-    <div class="energy-row">
-      <label>😰 今天让我更紧的事：</label>
-      <input class="energy-input" id="energyTight" placeholder="写一行就行">
-    </div>
-    <div class="energy-row">
-      <label>😌 今天让我松一点的事：</label>
-      <input class="energy-input" id="energyLoose" placeholder="很小的事也可以">
-    </div>
+    <div class="energy-row"><label>😰 今天让我更紧的事：</label><input class="energy-input" id="energyTight" placeholder="写一行就行"></div>
+    <div class="energy-row"><label>😌 今天让我松一点的事：</label><input class="energy-input" id="energyLoose" placeholder="很小的事也可以"></div>
   </div>
-
-  <!-- 存档日志 -->
-  <div class="log-section">
-    <h3>📖 存档日志</h3>
-    <div class="log-timeline" id="logTimeline"></div>
-  </div>
-
-  <!-- 主线任务 -->
-  <div class="habit-section">
-    <div class="habit-section-header">
-      <span class="title">📜 主线任务</span>
-    </div>
-    <div id="questList"></div>
-  </div>
-
-  <!-- 底部操作 -->
+  <div class="log-section"><h3>📖 存档日志</h3><div class="log-timeline" id="logTimeline"></div></div>
+  <div class="habit-section"><div class="habit-section-header"><span class="title">📜 主线任务</span></div><div id="questList"></div></div>
   <div class="footer-actions">
     <button class="footer-btn btn-review" onclick="openReview()">🧭 周复盘</button>
     <button class="footer-btn btn-export" onclick="exportData()">📤 导出</button>
@@ -471,869 +208,157 @@
   </div>
 </div>
 
+<!-- AI 聊天按钮 -->
+<button class="ai-chat-btn" id="aiChatBtn" onclick="toggleAIChat()" title="AI 顾问">💬<span class="notif-dot" id="notifDot"></span></button>
+
+<!-- AI 聊天面板 -->
+<div class="ai-chat-panel" id="aiChatPanel">
+  <div class="ai-chat-header"><span class="title">🤖 地球顾问</span><button class="close-btn" onclick="toggleAIChat()">✕</button></div>
+  <div class="ai-chat-setup"><span>Key:</span><input type="password" id="aiApiKey" placeholder="百炼API Key"><button class="save-btn" onclick="saveApiKey()">保存</button></div>
+  <div class="ai-chat-messages" id="aiMessages"></div>
+  <div class="ai-chat-input"><input type="text" id="aiInput" placeholder="问我关于你的系统..." onkeydown="if(event.key==='Enter')sendAIMessage()"><button onclick="sendAIMessage()" id="aiSendBtn">发送</button></div>
+</div>
+
 <!-- 周复盘弹窗 -->
 <div class="modal-overlay hidden" id="reviewModal">
-  <div class="modal-box">
-    <h2>🧭 周复盘</h2>
-    <div class="modal-q">
-      <label>1. 这周哪个习惯对我帮助最大？</label>
-      <select id="reviewBest"><option value="">-- 选择一个 --</option></select>
-    </div>
-    <div class="modal-q">
-      <label>2. 这周哪个习惯最没用/太累？</label>
-      <select id="reviewWorst"><option value="">-- 选择一个 --</option></select>
-    </div>
-    <div class="modal-q">
-      <label>3. 这周我更像我想成为的人了吗？</label>
-      <select id="reviewIdentity">
-        <option value="5">5 - 很像</option>
-        <option value="4">4 - 比较像</option>
-        <option value="3" selected>3 - 一般</option>
-        <option value="2">2 - 不太像</option>
-        <option value="1">1 - 完全不像</option>
-      </select>
-    </div>
-    <div class="modal-q">
-      <label>4. 这周有什么想对自己说的？</label>
-      <input type="text" id="reviewNote" placeholder="随便写">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeReview()">取消</button>
-      <button class="modal-save" onclick="saveReview()">保存</button>
-    </div>
+  <div class="modal-box"><h2>🧭 周复盘</h2>
+    <div class="modal-q"><label>1. 这周哪个习惯对我帮助最大？</label><select id="reviewBest"><option value="">-- 选择 --</option></select></div>
+    <div class="modal-q"><label>2. 这周哪个习惯最没用/太累？</label><select id="reviewWorst"><option value="">-- 选择 --</option></select></div>
+    <div class="modal-q"><label>3. 这周我更像我想成为的人了吗？</label><select id="reviewIdentity"><option value="5">5-很像</option><option value="4">4-比较像</option><option value="3" selected>3-一般</option><option value="2">2-不太像</option><option value="1">1-完全不像</option></select></div>
+    <div class="modal-q"><label>4. 这周想对自己说什么？</label><input type="text" id="reviewNote" placeholder="随便写"></div>
+    <div class="modal-actions"><button class="modal-cancel" onclick="closeReview()">取消</button><button class="modal-save" onclick="saveReview()">保存</button></div>
   </div>
 </div>
 
 <!-- 设置面板 -->
 <div class="modal-overlay hidden" id="settingsModal">
-  <div class="modal-box">
-    <h2>⚙️ 系统设置</h2>
-    <div class="modal-q">
-      <label>手动切换阶段</label>
-      <select id="settingsPhase">
-        <option value="survival">🔴 生存</option>
-        <option value="stabilize">🟡 稳定</option>
-        <option value="growth">🟢 成长</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeSettings()">取消</button>
-      <button class="modal-save" onclick="saveSettings()">保存</button>
-    </div>
+  <div class="modal-box"><h2>⚙️ 系统设置</h2>
+    <div class="modal-q"><label>手动切换阶段</label><select id="settingsPhase"><option value="survival">🔴 生存</option><option value="stabilize">🟡 稳定</option><option value="growth">🟢 成长</option></select></div>
+    <div class="modal-actions"><button class="modal-cancel" onclick="closeSettings()">取消</button><button class="modal-save" onclick="saveSettings()">保存</button></div>
   </div>
 </div>
 
 <script>
-// ========== 配置 ==========
-const LEVELS = [0, 50, 150, 350, 600, 1000];
-const modules = [
-  { id: 'hp', name: '健康', icon: '💪', color: '#22c55e' },
-  { id: 'mp', name: '精神', icon: '🧘', color: '#a855f7' },
-  { id: 'gp', name: '财务', icon: '💰', color: '#eab308' },
-  { id: 'ap', name: '外貌', icon: '✨', color: '#f43f5e' },
-  { id: 'sp', name: '专业', icon: '📚', color: '#3b82f6' },
-  { id: 'rp', name: '关系', icon: '💕', color: '#ec4899' }
+const LEVELS=[0,50,150,350,600,1000];
+const modules=[{id:'hp',name:'健康',icon:'💪',color:'#22c55e'},{id:'mp',name:'精神',icon:'🧘',color:'#a855f7'},{id:'gp',name:'财务',icon:'💰',color:'#eab308'},{id:'ap',name:'外貌',icon:'✨',color:'#f43f5e'},{id:'sp',name:'专业',icon:'📚',color:'#3b82f6'},{id:'rp',name:'关系',icon:'💕',color:'#ec4899'}];
+const PHASES=[{id:'survival',name:'生存',icon:'🔴',tag:'先止血',threshold:0,nextThreshold:56,layers:['survival']},{id:'stabilize',name:'稳定',icon:'🟡',tag:'再走路',threshold:56,nextThreshold:206,layers:['survival','stabilize']},{id:'growth',name:'成长',icon:'🟢',tag:'最后跑步',threshold:206,nextThreshold:null,layers:['survival','stabilize','growth']}];
+const INVEST_GOALS=[{name:'近视手术',target:50000,color:'#3b82f6'},{name:'中期底气',target:150000,color:'#a855f7'},{name:'自由价格',target:1000000,color:'#eab308'}];
+const QUESTS=[{icon:'📚',name:'考上重庆事业编',desc:'2027.2考试'},{icon:'💍',name:'经营婚姻',desc:'2026.5.1新婚'},{icon:'👁️',name:'近视手术',desc:'定投≥5万'},{icon:'🏠',name:'搬出宿舍',desc:'还清欠债后'},{icon:'🚀',name:'自由的价格',desc:'定投100万'}];
+const IDENTITIES=[{minScore:0,label:'🌱 开始的人'},{minScore:10,label:'🌿 在行动的人'},{minScore:30,label:'🌳 持续的人'},{minScore:56,label:'🔓 夺回空间的人'},{minScore:100,label:'🧭 正在找到方向的人'},{minScore:206,label:'🏃 在成长的人'},{minScore:365,label:'✨ 学会照顾自己的人'},{minScore:500,label:'🎨 正在创造的人'},{minScore:1000,label:'🌟 看见光的人'}];
+
+const allLayers=[
+  {id:'survival',badge:'🔴 生存层',badgeClass:'red',desc:'照顾一具已经拉响警报的身体',habits:[
+    {mod:'mp',text:'胸口急救协议',pts:2,freq:'daily',hint:'胸口发紧时立即执行',detail:'<h4>🫁 胸口急救协议</h4><p>胸口发紧时立刻做：</p><ul><li>找地方躺下</li><li>双手交叉放在胸口，轻压</li><li>闭眼，什么都不想</li><li>等3分钟，让身体知道"没事"</li></ul><div class="tip">💡 这是哺乳动物最原始的自我安抚方式。你需要的是物理信号告诉身体"安全"，不是冥想。</div>'},
+    {mod:'mp',text:'宿舍脱敏',pts:2,freq:'daily',hint:'正常音量，不心理建设',detail:'<h4>🚪 宿舍脱敏实验</h4><p>每天做1-2个：正常关门、直接去卫生间、在房间做舒服的事。</p><div class="tip">💡 她已经让你小心翼翼3个月了，够了。这是你的空间。</div>'},
+    {mod:'hp',text:'凌晨1点前躺下',pts:2,freq:'daily',hint:'手机可刷，身体必须躺',detail:'<h4>🛏️ 睡眠底线</h4><p>凌晨1:00前必须躺下。手机可以刷，但身体必须躺下。</p><div class="tip">💡 现在1:30才睡意味着2:30才能入睡。多半小时很关键。</div>'},
+    {mod:'hp',text:'18:00前喝2L水',pts:1,freq:'daily',hint:'脱水加重焦虑',detail:'<h4>💧 喝水计划</h4><p>8:00一杯→10:00一杯→12:00一杯→14:00一杯→16:00一杯→18:00一杯。</p><div class="tip">💡 买大容量水杯放工位，看到就喝。脱水会直接加重焦虑。</div>'},
+    {mod:'hp',text:'按饮食系统吃三餐',pts:3,freq:'daily',hint:'血糖稳情绪才稳',detail:'<h4>🍽️ 饮食系统</h4><p><b>早</b>：鸡蛋+全麦面包/燕麦+牛奶<br><b>午</b>：主食+肉+蔬菜，7分饱<br><b>晚</b>：清淡为主，比午餐少</p><div class="tip">💡 小电煮锅可以煮粥煎蛋。水果坚果替代零食。奶茶一周最多1杯。</div>'},
+    {mod:'mp',text:'安全空间探索',pts:3,freq:'weekly',weekKey:'safe_space',hint:'找可独处的安全点',detail:'<h4>🗺️ 安全空间</h4><p>找建设北路周边的咖啡馆/书店/公园，去了胸口不会紧的地方。每周至少去一次。</p><div class="tip">💡 不用花钱多，第一次只去10分钟也行。这是在训练身体相信"有些地方是OK的"。</div>'},
+  ]},
+  {id:'stabilize',badge:'🟡 稳定层',badgeClass:'yellow',desc:'设计你的回应方式',habits:[
+    {mod:'sp',text:'工作NPC模式',pts:2,freq:'weekly',weekKey:'npc_refuse',hint:'至少拒绝/延迟一次',detail:'<h4>🎮 工作NPC模式</h4><p>"收到"=接任务不代表认同。"我在忙，排到后面"=委婉拒绝。留痕留证。</p><div class="tip">💡 不是变冷漠，是减少情绪投入。</div>'},
+    {mod:'mp',text:'周末保护半天',pts:3,freq:'weekly',weekKey:'weekend_protect',hint:'3-4小时完全属于你',detail:'<h4>🛡️ 周末保护半天</h4><p>去安全点、逛街、打扫卫生、看电影吃小吃喝椰子水。不看工作消息，不想室友的事。</p><div class="tip">💡 夺回你的回血时间。</div>'},
+    {mod:'hp',text:'身体松动5分钟',pts:2,freq:'daily',hint:'拉伸/下楼走',detail:'<h4>🧘 身体松动</h4><p>伸展双臂10次、转脖子、扭腰、下楼走一圈、靠墙站1分钟。</p><div class="tip">💡 打断凝固状态，不是锻炼。</div>'},
+    {mod:'mp',text:'写日计划',pts:1,freq:'daily',hint:'2分钟，3件事',detail:'<h4>📋 日计划</h4><p>必须做1件、想做1件、可以放1件。</p><div class="tip">💡 三行字减少决策疲劳。</div>'},
+    {mod:'mp',text:'能量日记',pts:1,freq:'daily',hint:'记录更紧/松的事',detail:'<h4>📝 能量日记</h4><p>写两行：今天让我更紧的事 / 让我松一点的事。</p><div class="tip">💡 一周后回看，你会发现规律。</div>'},
+  ]},
+  {id:'growth',badge:'🟢 成长层',badgeClass:'green',desc:'在创造中变得自由',habits:[
+    {mod:'hp',text:'23:30前入睡',pts:2,freq:'daily',hint:'从躺下升级到入睡',detail:'<h4>😴 入睡升级</h4><p>23:00放下手机→23:15洗漱→23:30闭眼。</p><div class="tip">💡 生存层稳定后再加。</div>'},
+    {mod:'hp',text:'运动',pts:3,freq:'daily',hint:'正式运动20分钟',detail:'<h4>🏃 运动</h4><p>快走/慢跑/跳绳/瑜伽/骑车/跟练视频，20分钟。</p><div class="tip">💡 一周3-4次就行。</div>'},
+    {mod:'sp',text:'学习5分钟',pts:3,freq:'daily',hint:'考编/AI/任何学习',detail:'<h4>📖 学习5分钟</h4><p>考编刷题、AI教程、音乐制作都行。5分钟就是开始。</p><div class="tip">💡 开始了就会学更久。</div>'},
+    {mod:'sp',text:'按计划推进学习',pts:2,freq:'daily',hint:'有计划地学',detail:'<h4>📋 按计划学习</h4><p>完成今天的学习计划。和"5分钟"不同，这是有方向的学。</p>'},
+    {mod:'gp',text:'记录当日支出',pts:1,freq:'daily',hint:'财务意识',detail:'<h4>💰 记录支出</h4><p>花30秒记大概花了多少。目的是建立财务意识。</p>'},
+    {mod:'rp',text:'跟老公联系',pts:2,freq:'daily',hint:'发消息/打电话',detail:'<h4>💕 跟老公联系</h4><p>发消息、打电话、发照片、晚安都行。需要的是"存在感"。</p>'},
+    {mod:'ap',text:'晚间护肤',pts:1,freq:'daily',hint:'洗脸+爽肤水+面霜',detail:'<h4>✨ 晚间护肤</h4><p>卸妆/洗脸→爽肤水→精华/面霜。3步够了。</p><div class="tip">💡 照顾自己是尊严不是奢侈。</div>'},
+    {mod:'ap',text:'出门防晒+底妆',pts:1,freq:'daily',hint:'防晒霜+BB霜+口红',detail:'<h4>🌞 出门防晒+底妆</h4><p>防晒霜+轻薄底妆+提气色口红。照镜子时觉得自己"还不错"。</p>'},
+    {mod:'mp',text:'创造时间5分钟',pts:3,freq:'daily',hint:'音乐/写/画都行',detail:'<h4>🎨 创造时间</h4><p>音乐、写东西、画画、拍照、做新菜都行。5分钟就够了。</p><div class="tip">💡 在创造中变得自由。</div>'},
+  ]}
 ];
 
-const PHASES = [
-  { id: 'survival', name: '生存', icon: '🔴', tag: '先止血', threshold: 0, nextThreshold: 56, layers: ['survival'] },
-  { id: 'stabilize', name: '稳定', icon: '🟡', tag: '再走路', threshold: 56, nextThreshold: 206, layers: ['survival','stabilize'] },
-  { id: 'growth', name: '成长', icon: '🟢', tag: '最后跑步', threshold: 206, nextThreshold: null, layers: ['survival','stabilize','growth'] }
-];
+function getDateKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function getWeekKey(){const d=new Date();const day=d.getDay();const m=new Date(d);m.setDate(d.getDate()-(day===0?6:day-1));return `w_${m.getFullYear()}_${String(m.getMonth()+1).padStart(2,'0')}_${String(m.getDate()).padStart(2,'0')}`;}
+function loadData(){try{const r=localStorage.getItem('earth-online-v2');if(r){const d=JSON.parse(r);if(d.meta?.version==='2.0')return d;}}catch(e){}return defaultData();}
+function defaultData(){return{xp:{hp:0,mp:0,gp:0,ap:0,sp:0,rp:0},daily:{},investHistory:[],currentPhase:'survival',phaseHistory:[{phase:'survival',startedAt:getDateKey(),note:'系统启动'}],logs:[{date:getDateKey(),text:'🌍 创建了 Earth Online 系统'}],reviews:[],meta:{version:'2.0',createdAt:getDateKey()}};}
+function saveData(data){localStorage.setItem('earth-online-v2',JSON.stringify(data));}
+function addLog(text){const d=loadData();d.logs=d.logs||[];d.logs.unshift({date:getDateKey(),text});saveData(d);}
+function calcAllScores(data){let t=0;for(const d of Object.values(data.daily))t+=d.score||0;return t;}
+function calcDayScore(data,dateKey){const day=data.daily[dateKey];if(!day)return{total:0,survivalDone:0,survivalTotal:8,survivalPass:false};const habits=day.habits||{};const phase=PHASES.find(p=>p.id===data.currentPhase)||PHASES[0];let total=0,sd=0;allLayers.forEach(layer=>{if(!phase.layers.includes(layer.id))return;layer.habits.forEach((h,i)=>{const key=h.freq==='weekly'?`w_${h.weekKey}`:`${layer.id}_${i}`;if(habits[key]){total+=h.pts;if(layer.id==='survival'&&h.freq==='daily')sd++;}});});return{total,survivalDone:sd,survivalTotal:8,survivalPass:sd>=8};}
+function checkPhaseUpgrade(data){const phase=PHASES.find(p=>p.id===data.currentPhase);if(!phase||phase.nextThreshold===null)return null;const ts=calcAllScores(data);if(phase.id==='survival'){let s=0;const t=new Date();for(let i=0;i<7;i++){const d=new Date(t);d.setDate(d.getDate()-i);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(calcDayScore(data,key).survivalPass)s++;else break;}if(s>=7)return 'stabilize';}if(phase.id==='stabilize'&&ts>=206)return 'growth';return null;}
+function calcStreak(data){let s=0;const t=new Date();for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const info=calcDayScore(data,key);if(!info.total&&i===0)continue;if(info.survivalPass||info.total>0)s++;else if(i>0)break;}return s;}
+function calcBestStreak(data){let best=0,cur=0;for(const key of Object.keys(data.daily).sort()){const info=calcDayScore(data,key);if(info.survivalPass||info.total>0)cur++;else cur=0;if(cur>best)best=cur;}return best;}
+function calcInvestTotal(data){return(data.investHistory||[]).reduce((s,r)=>s+(r.amount||0),0);}
 
-const INVEST_GOALS = [
-  { name: '近视手术', target: 50000, color: '#3b82f6' },
-  { name: '中期底气', target: 150000, color: '#a855f7' },
-  { name: '自由价格', target: 1000000, color: '#eab308' }
-];
-
-const QUESTS = [
-  { icon: '📚', name: '考上重庆事业编', desc: '当前第一主线，2027.2考试' },
-  { icon: '💍', name: '经营婚姻', desc: '2026.5.1新婚，异地用心经营' },
-  { icon: '👁️', name: '近视手术', desc: '定投≥5万' },
-  { icon: '🏠', name: '搬出宿舍', desc: '还清欠债后，预算~1500/月' },
-  { icon: '🚀', name: '自由的价格', desc: '定投100万，45岁前' }
-];
-
-const IDENTITIES = [
-  { minScore: 0, label: '🌱 开始的人' },
-  { minScore: 10, label: '🌿 在行动的人' },
-  { minScore: 30, label: '🌳 持续的人' },
-  { minScore: 56, label: '🔓 夺回空间的人' },
-  { minScore: 100, label: '🧭 正在找到方向的人' },
-  { minScore: 206, label: '🏃 在成长的人' },
-  { minScore: 365, label: '✨ 学会照顾自己的人' },
-  { minScore: 500, label: '🎨 正在创造的人' },
-  { minScore: 1000, label: '🌟 看见光的人' }
-];
-
-// ========== 习惯定义（含详细指引） ==========
-const allLayers = [
-  {
-    id: 'survival',
-    badge: '🔴 生存层',
-    badgeClass: 'red',
-    desc: '照顾一具已经拉响警报的身体',
-    habits: [
-      {
-        mod: 'mp', text: '胸口急救协议', pts: 2, freq: 'daily',
-        hint: '胸口发紧时立即执行',
-        detail: `<h4>🫁 胸口急救协议</h4>
-<p>当你感知到胸口发紧、呼吸不畅时，不要对抗，不要分析原因——立刻做以下动作：</p>
-<ul>
-<li><b>找地方躺下</b>——沙发、床、地板都行</li>
-<li><b>双手交叉放在胸口</b>——轻压，像抱住自己</li>
-<li><b>闭上眼睛</b>——什么都不要想，不要"观照内心"</li>
-<li><b>等3分钟</b>——就让身体知道"我在，没事"</li>
-<li>3分钟后起身，该干嘛干嘛</li>
-</ul>
-<div class="tip">💡 原理：这是哺乳动物最原始的自我安抚方式。你的身体在发出警报，你需要的是<strong>物理信号</strong>告诉它"现在是安全的"，不是冥想或思考。</div>`
-      },
-      {
-        mod: 'mp', text: '宿舍脱敏', pts: 2, freq: 'daily',
-        hint: '正常音量关门，不做心理建设',
-        detail: `<h4>🚪 宿舍脱敏实验</h4>
-<p>核心认知：<strong>你不是要"不在意"，你是要用行动重新声明"这是我的家"。</strong></p>
-<p>每天做1-2个：</p>
-<ul>
-<li><b>正常音量关门</b>——不刻意轻，不故意重，自然就好</li>
-<li><b>该去卫生间就去</b>——不做"心理建设"，想到就去</li>
-<li><b>晚上在房间做舒服的事</b>——听歌、吃东西都行，不用躲着</li>
-</ul>
-<div class="tip">💡 她发消息那天是她的问题，不是你的。你已经小心翼翼快3个月了，够了。这个空间你付了时间成本（选择住这里），你有权利正常使用。</div>`
-      },
-      {
-        mod: 'hp', text: '凌晨1点前躺下', pts: 2, freq: 'daily',
-        hint: '手机可以刷，身体必须躺下',
-        detail: `<h4>🛏️ 睡眠底线</h4>
-<p>不做"23:30睡"这个要求——现在的你做不到，逼自己只会增加焦虑。</p>
-<p><b>新底线：凌晨1:00前必须躺在床上。</b></p>
-<ul>
-<li>手机可以刷，视频可以看</li>
-<li>但身体必须躺下</li>
-<li>枕头被子准备好，调好舒适温度</li>
-</ul>
-<div class="tip">💡 你现在1:30才睡，意味着2:30-3:00才能入睡。1点躺下，至少多睡半小时。这半小时对慢性应激的身体来说，可能就是第二天能不能撑住的区别。</div>`
-      },
-      {
-        mod: 'hp', text: '18:00前喝完2L水', pts: 1, freq: 'daily',
-        hint: '脱水加重焦虑和疲劳',
-        detail: `<h4>💧 喝水计划</h4>
-<p>目标：每天2升水（约8杯），在18:00前喝完。</p>
-<p><b>推荐节奏：</b></p>
-<ul>
-<li><b>8:00</b> 起床一杯温水（250ml）——唤醒身体</li>
-<li><b>10:00</b> 上午第二杯（250ml）——工位水杯</li>
-<li><b>12:00</b> 午饭前一杯（250ml）——饭前喝减少暴食</li>
-<li><b>14:00</b> 下午第三杯（250ml）——下午容易犯困，补水提神</li>
-<li><b>16:00</b> 第四杯（250ml）</li>
-<li><b>18:00</b> 最后一杯（250ml）——之后少喝，避免夜尿影响睡眠</li>
-</ul>
-<div class="tip">💡 技巧：买一个大容量水杯（500ml或750ml），放工位上。看到杯子就喝。不用记"第几杯"，看刻度就行。脱水会直接导致焦虑加重、头痛、注意力下降——你以为是自己状态差，其实是缺水。</div>`
-      },
-      {
-        mod: 'hp', text: '按饮食系统吃三餐', pts: 3, freq: 'daily',
-        hint: '血糖稳了情绪才稳',
-        detail: `<h4>🍽️ 饮食系统</h4>
-<p>你的饮食目标不是减肥，是<b>稳定血糖=稳定情绪</b>。</p>
-<p><b>早餐（7:30-8:30）：</b></p>
-<ul>
-<li>方案A：鸡蛋1-2个 + 全麦面包/包子 + 豆浆/牛奶</li>
-<li>方案B：燕麦片 + 牛奶/酸奶 + 坚果一小把</li>
-<li>不要空腹喝咖啡！先吃再喝</li>
-</ul>
-<p><b>午餐（12:00-13:00）：</b></p>
-<ul>
-<li>主食（米饭/面）+ 肉（鸡/鱼/牛）+ 蔬菜</li>
-<li>外卖选：有肉有菜的套餐，避开纯碳水（盖饭+汤这种）</li>
-<li>吃到7分饱，不要撑</li>
-</ul>
-<p><b>晚餐（18:00-19:00）：</b></p>
-<ul>
-<li>比午餐少一点，清淡为主</li>
-<li>方案A：粥/面 + 蔬菜 + 少量蛋白质</li>
-<li>方案B：沙拉/轻食 + 鸡胸肉/豆腐</li>
-<li>建设北路好吃街多，尽量避开重油重辣（不是不能吃，是别每天吃）</li>
-</ul>
-<div class="tip">💡 宿舍条件有限的话：<br>• 买个小电煮锅，可以煮粥、煮面、煎蛋<br>• 水果和坚果当零食，替代奶茶和薯片<br>• 周末可以备一些即食鸡胸肉、全麦面包、燕麦<br>• 奶茶一周最多1杯，不是禁掉，是减少频率</div>`
-      },
-      {
-        mod: 'mp', text: '安全空间探索', pts: 3, freq: 'weekly', weekKey: 'safe_space',
-        hint: '本周找1-2个可独处的安全点',
-        detail: `<h4>🗺️ 安全空间探索</h4>
-<p>你现在没有一个"安全基地"——大脑永远在扫描威胁。你需要找到一个地方，去了之后胸口不会紧。</p>
-<p><b>去哪找：</b></p>
-<ul>
-<li><b>建设北路周边</b>——咖啡馆、茶馆、书店、公园长椅</li>
-<li><b>公司附近</b>——午休时可以去的地方</li>
-<li><b>图书馆</b>——安静的公共空间</li>
-<li>甚至是一个少人的地铁站台</li>
-</ul>
-<p><b>标准很简单：去了之后胸口不会紧。</b></p>
-<p>找到后记下来，标记为你的"安全点"。每周至少去一次。</p>
-<div class="tip">💡 不用花钱很多。关键是"一个人待着也不会不舒服"。第一次可以只去10分钟，慢慢延长时间。这是一个"训练"你的身体相信"有些地方是OK的"的过程。</div>`
-      }
-    ]
-  },
-  {
-    id: 'stabilize',
-    badge: '🟡 稳定层',
-    badgeClass: 'yellow',
-    desc: '设计你的回应方式',
-    habits: [
-      {
-        mod: 'sp', text: '工作NPC模式', pts: 2, freq: 'weekly', weekKey: 'npc_refuse',
-        hint: '本周至少拒绝/延迟一次',
-        detail: `<h4>🎮 工作NPC模式</h4>
-<p>把同事和领导当成游戏NPC。他们发任务，你接或不接。</p>
-<p><b>核心规则：</b></p>
-<ul>
-<li><b>"收到"</b> = 接任务，不代表你认同或承诺</li>
-<li><b>"我有XX在忙，这个排到后面"</b> = 委婉拒绝</li>
-<li><b>"我先看看，稍后回复你"</b> = 争取缓冲时间</li>
-<li>公事公办，留痕留证（邮件/群聊确认），不靠口头承诺</li>
-</ul>
-<p><b>每周至少做一次：</b>拒绝一次、延迟一次、或说"稍后"一次。</p>
-<div class="tip">💡 你不是在"变冷漠"，你是在"减少情绪投入"。工作就是工作，不是你的身份认同。把精力留给真正重要的事——考编、生活、你自己。</div>`
-      },
-      {
-        mod: 'mp', text: '周末保护半天', pts: 3, freq: 'weekly', weekKey: 'weekend_protect',
-        hint: '3-4小时完全属于你',
-        detail: `<h4>🛡️ 周末保护半天</h4>
-<p>每周六或周日，抽出3-4小时完全属于你的时间。</p>
-<p><b>做什么：</b></p>
-<ul>
-<li>去安全点待着</li>
-<li>出门走走、逛逛建设北路好吃街</li>
-<li>打扫卫生、洗个澡、洗个衣服</li>
-<li>看喜欢的电影、吃小吃、喝椰子水</li>
-<li>或者什么都不做，就待着</li>
-</ul>
-<p><b>不做什么：</b></p>
-<ul>
-<li>不看工作消息</li>
-<li>不想室友的事</li>
-<li>不计划未来、不焦虑考编</li>
-</ul>
-<div class="tip">💡 周末本该是你的回血时间。现在它变成了第二个消耗场。这个习惯的目的就是"夺回"周末——哪怕半天。</div>`
-      },
-      {
-        mod: 'hp', text: '身体松动5分钟', pts: 2, freq: 'daily',
-        hint: '拉伸/转脖子/下楼走',
-        detail: `<h4>🧘 身体松动（不是运动）</h4>
-<p>不是"运动"，是"不让身体继续僵下去"。</p>
-<p><b>每天5分钟，选一个做：</b></p>
-<ul>
-<li>站起来，伸展双臂10次</li>
-<li>转脖子（左右各5圈）</li>
-<li>扭扭腰、伸伸懒腰</li>
-<li>下楼走一圈（5分钟就行）</li>
-<li>靠墙站1分钟（改善圆肩驼背）</li>
-</ul>
-<div class="tip">💡 你现在的身体处于"凝固状态"——久坐 + 精神紧张 + 睡眠不足。不需要运动，只需要"松动"。目的是打断凝固，不是锻炼。</div>`
-      },
-      {
-        mod: 'mp', text: '写日计划', pts: 1, freq: 'daily',
-        hint: '2分钟，减少决策疲劳',
-        detail: `<h4>📋 日计划（2分钟）</h4>
-<p>每天早上（或前一晚）花2分钟写3件事：</p>
-<ul>
-<li><b>今天必须做的1件事</b>——最重要的，做完就赢</li>
-<li><b>今天想做的1件事</b>——让自己开心的，不是必须的</li>
-<li><b>今天可以放的1件事</b>——可以不做或推后的</li>
-</ul>
-<div class="tip">💡 不是详细的时间表，就是三行字。目的是减少决策疲劳——每天不用想"我该干嘛"，看这三行就行。</div>`
-      },
-      {
-        mod: 'mp', text: '能量日记', pts: 1, freq: 'daily',
-        hint: '记录更紧/松的事',
-        detail: `<h4>📝 能量日记</h4>
-<p>每天晚上花1分钟记两行——不是情绪日记，是<b>事件记录</b>：</p>
-<ul>
-<li><b>😰 今天让我更紧的事：</b>（什么触发了你的焦虑/胸口紧）</li>
-<li><b>😌 今天让我松一点的事：</b>（哪怕是很小的事，比如喝了一杯水）</li>
-</ul>
-<p>不用写感受，只写事件。目的是帮你识别哪些是真正的触发源，哪些只是噪音。</p>
-<div class="tip">💡 一周后回看，你会发现规律。比如"室友关门声"出现的频率是不是在降低？"喝椰子水"出现的频率是不是在增加？这就是你的自我觉察在成长。</div>`
-      }
-    ]
-  },
-  {
-    id: 'growth',
-    badge: '🟢 成长层',
-    badgeClass: 'green',
-    desc: '在创造中变得自由',
-    habits: [
-      {
-        mod: 'hp', text: '23:30前入睡', pts: 2, freq: 'daily',
-        hint: '从"躺下"升级到"入睡"',
-        detail: `<h4>😴 入睡升级</h4>
-<p>从生存层的"1点前躺下"升级到"23:30前入睡"。</p>
-<p><b>怎么做：</b></p>
-<ul>
-<li>23:00 放下手机</li>
-<li>23:15 洗漱完毕</li>
-<li>23:30 闭上眼睛</li>
-</ul>
-<div class="tip">💡 这个习惯在生存层稳定后再加。现在不用管，先把1点前躺下做好。</div>`
-      },
-      {
-        mod: 'hp', text: '运动', pts: 3, freq: 'daily',
-        hint: '任何形式的正式运动',
-        detail: `<h4>🏃 运动（正式运动）</h4>
-<p>和"身体松动"不同，这是正式运动。</p>
-<p><b>选一个做（20分钟即可）：</b></p>
-<ul>
-<li>快走/慢跑</li>
-<li>跳绳</li>
-<li>瑜伽/拉伸</li>
-<li>骑车</li>
-<li>跟练视频（Keep、B站都行）</li>
-</ul>
-<div class="tip">💡 不用天天做，一周3-4次就行。但"运动"和"松动"是不同的——松动是不让你僵，运动是让你强。</div>`
-      },
-      {
-        mod: 'sp', text: '学习5分钟', pts: 3, freq: 'daily',
-        hint: '考编/AI/任何学习',
-        detail: `<h4>📖 学习5分钟</h4>
-<p>门槛极低：5分钟就行。任何学习都算：</p>
-<ul>
-<li>考编：行测刷5道题、看10页申论</li>
-<li>AI：学一个新工具、看一个教程</li>
-<li>电子音乐：看一个制作教程、打开DAW随便搞搞</li>
-<li>任何让你觉得"学到了点什么"的事</li>
-</ul>
-<div class="tip">💡 5分钟的目的是"开始"。一旦开始了，很多人会不自觉学更久。如果5分钟真的够了，那也很好——你保持了学习的连续性。</div>`
-      },
-      {
-        mod: 'sp', text: '按计划推进学习', pts: 2, freq: 'daily',
-        hint: '有计划地学',
-        detail: `<h4>📋 按计划推进学习</h4>
-<p>和"学习5分钟"的区别：这个是"有计划地学"。</p>
-<p>比如：</p>
-<ul>
-<li>今天计划：完成行测言语理解第3章</li>
-<li>今天计划：写完一篇申论小作文</li>
-<li>今天计划：学会一个AI工具的基本用法</li>
-</ul>
-<p>完成了就勾。不完成也不自责。</p>
-<div class="tip">💡 这个习惯是培养"有方向的学习"习惯。5分钟是"动起来"，按计划是"往哪走"。两者配合。</div>`
-      },
-      {
-        mod: 'gp', text: '记录当日支出', pts: 1, freq: 'daily',
-        hint: '财务意识',
-        detail: `<h4>💰 记录当日支出</h4>
-<p>每天花30秒记一下今天花了多少钱。</p>
-<p><b>不用很精确，记个大概就行：</b></p>
-<ul>
-<li>午饭 25</li>
-<li>奶茶 15</li>
-<li>打车 12</li>
-<li>合计 52</li>
-</ul>
-<div class="tip">💡 目的是建立"财务意识"——知道自己钱花哪了，不是记账到每一分钱。一周后你会发现自己哪些消费是"无意识的"。</div>`
-      },
-      {
-        mod: 'rp', text: '跟老公联系', pts: 2, freq: 'daily',
-        hint: '发消息/打电话都行',
-        detail: `<h4>💕 跟老公联系</h4>
-<p>异地婚姻需要日常维护。</p>
-<p><b>形式不限：</b></p>
-<ul>
-<li>发个消息分享今天的事</li>
-<li>打个电话聊10分钟</li>
-<li>发个表情包/照片</li>
-<li>睡前说晚安</li>
-</ul>
-<div class="tip">💡 不需要"高质量对话"，只需要"存在感"。让对方知道你今天还在、还在想他、你们还在一起。这比一周一次长电话重要得多。</div>`
-      },
-      {
-        mod: 'ap', text: '晚间护肤', pts: 1, freq: 'daily',
-        hint: '',
-        detail: `<h4>✨ 晚间护肤</h4>
-<p>睡前花5分钟做基础护肤：</p>
-<ul>
-<li>卸妆/洗脸</li>
-<li>爽肤水</li>
-<li>精华/面霜</li>
-</ul>
-<div class="tip">💡 照顾自己是尊严不是奢侈。不需要10步routine，3步够了。重要的是"我在照顾自己"这个行为本身。</div>`
-      },
-      {
-        mod: 'ap', text: '出门防晒+底妆', pts: 1, freq: 'daily',
-        hint: '',
-        detail: `<h4>🌞 出门防晒+底妆</h4>
-<p>出门前花5分钟：</p>
-<ul>
-<li>防晒霜</li>
-<li>轻薄的底妆（BB霜/气垫就行）</li>
-<li>口红（选一个提气色的颜色）</li>
-</ul>
-<div class="tip">💡 不是为了别人，是为了你自己——照镜子时觉得自己"还不错"，这个瞬间很重要。</div>`
-      },
-      {
-        mod: 'mp', text: '创造时间5分钟', pts: 3, freq: 'daily',
-        hint: '音乐/写/画都行',
-        detail: `<h4>🎨 创造时间</h4>
-<p>每天5分钟，做一件"创造"的事：</p>
-<ul>
-<li>打开DAW随便搞搞电子音乐</li>
-<li>写点什么（日记、随笔、歌词都行）</li>
-<li>画几笔</li>
-<li>拍一张好看的照片</li>
-<li>做一道新菜</li>
-</ul>
-<div class="tip">💡 不是"等自由了再创造"，是在创造中变得自由。5分钟就够了——重点是"我在创造"这个身份确认，不是产出质量。</div>`
-      }
-    ]
-  }
-];
-
-// ========== 数据 ==========
-function getDateKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function getWeekKey() {
-  const d = new Date();
-  const day = d.getDay();
-  const monday = new Date(d);
-  monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-  return `w_${monday.getFullYear()}_${String(monday.getMonth()+1).padStart(2,'0')}_${String(monday.getDate()).padStart(2,'0')}`;
+function render(){
+  const data=loadData();const dk=getDateKey();
+  if(!data.daily[dk]){data.daily[dk]={habits:{},invest:0,energy:{tight:'',loose:''},score:0,survivalPass:false};saveData(data);}
+  const phase=PHASES.find(p=>p.id===data.currentPhase)||PHASES[0];
+  const upgrade=checkPhaseUpgrade(data);
+  if(upgrade){data.currentPhase=upgrade;const np=PHASES.find(p=>p.id===upgrade);data.phaseHistory.push({phase:upgrade,startedAt:dk,note:`自动升级: ${np.name}`});data.logs.unshift({date:dk,text:`🎉 进入${np.icon} ${np.name}阶段 — ${np.tag}`});saveData(data);}
+  const now=new Date();const wd=['日','一','二','三','四','五','六'];
+  document.getElementById('todayDate').textContent=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} 周${wd[now.getDay()]}`;
+  const ts=calcAllScores(data);document.getElementById('totalScore').textContent=ts;
+  let identity=IDENTITIES[0].label;for(const id of IDENTITIES){if(ts>=id.minScore)identity=id.label;}document.getElementById('identityBadge').textContent=identity;
+  const pt=document.getElementById('phaseTag');pt.textContent=`${phase.icon} ${phase.name}`;pt.className=`phase-tag ${phase.id==='survival'?'red':phase.id==='stabilize'?'yellow':'green'}`;
+  const pp=document.getElementById('phaseProgress');const pl=document.getElementById('phaseLabel');
+  if(phase.nextThreshold!==null){const pr=Math.min(((ts-phase.threshold)/(phase.nextThreshold-phase.threshold))*100,100);pp.style.width=`${pr}%`;pl.textContent=`距${PHASES[PHASES.indexOf(phase)+1]?.name||'下一阶段'}还差 ${Math.max(phase.nextThreshold-ts,0)} 分`;}else{pp.style.width='100%';pl.textContent='已达最高阶段 🌟';}
+  document.getElementById('streakCount').textContent=calcStreak(data);
+  document.getElementById('bestStreak').textContent=calcBestStreak(data);
+  document.getElementById('daysActive').textContent=Object.keys(data.daily).filter(k=>(data.daily[k].score||0)>0).length;
+  renderTrend(data);renderModules(data);renderInvest(data);renderHabits(data);renderLogs(data);renderQuests();renderAlert(data);
+  const day=data.daily[dk];document.getElementById('energyTight').value=(day.energy?.tight)||'';document.getElementById('energyLoose').value=(day.energy?.loose)||'';
+  document.getElementById('energyTight').oninput=()=>saveEnergyField('tight',document.getElementById('energyTight').value);
+  document.getElementById('energyLoose').oninput=()=>saveEnergyField('loose',document.getElementById('energyLoose').value);
+  document.getElementById('settingsPhase').value=data.currentPhase;
 }
 
-function loadData() {
-  try {
-    const raw = localStorage.getItem('earth-online-v2');
-    if (raw) { const d = JSON.parse(raw); if (d.meta?.version === '2.0') return d; }
-  } catch(e) {}
-  return defaultData();
-}
-function defaultData() {
-  return {
-    xp: {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0},
-    daily: {},
-    investHistory: [],
-    currentPhase: 'survival',
-    phaseHistory: [{ phase: 'survival', startedAt: getDateKey(), note: '系统启动' }],
-    logs: [{ date: getDateKey(), text: '🌍 创建了 Earth Online 系统' }],
-    reviews: [],
-    meta: { version: '2.0', createdAt: getDateKey() }
-  };
-}
-function saveData(data) { localStorage.setItem('earth-online-v2', JSON.stringify(data)); }
-function addLog(text) {
-  const data = loadData();
-  data.logs = data.logs || [];
-  data.logs.unshift({ date: getDateKey(), text });
-  saveData(data);
-}
+function renderTrend(data){const chart=document.getElementById('trendChart');const today=new Date();let mx=1;const scores=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const info=calcDayScore(data,key);scores.push({key,score:info.total,isToday:i===0});if(info.total>mx)mx=info.total;}const days=['日','一','二','三','四','五','六'];chart.innerHTML=scores.map(s=>{const h=Math.max((s.score/mx)*50,4);const dow=new Date(s.key).getDay();return `<div class="trend-col"><div class="trend-bar ${s.isToday?'today':''}" style="height:${h}px" title="${s.key}: ${s.score}分"></div><div class="trend-bar-label">${s.isToday?'今':'周'+days[dow]}</div></div>`;}).join('');}
 
-// ========== 计算 ==========
-function calcAllScores(data) {
-  let totalScore = 0;
-  for (const day of Object.values(data.daily)) { totalScore += day.score || 0; }
-  return totalScore;
-}
+function renderModules(data){const grid=document.getElementById('statsGrid');grid.innerHTML='';modules.forEach(m=>{const xp=data.xp[m.id]||0;let lvl=0;for(let i=LEVELS.length-1;i>=0;i--){if(xp>=LEVELS[i]){lvl=i;break;}}const nt=lvl<LEVELS.length-1?LEVELS[lvl+1]:LEVELS[lvl];const pt2=LEVELS[lvl];const pr=lvl<LEVELS.length-1?Math.min(((xp-pt2)/(nt-pt2))*100,100):100;grid.innerHTML+=`<div class="stat-card"><div class="icon">${m.icon}</div><div class="name">${m.name}</div><div class="level" style="color:${m.color}">Lv ${lvl}</div><div class="xp">${xp}/${nt}</div><div class="xp-bar"><div class="xp-bar-fill" style="width:${pr}%;background:${m.color}"></div></div></div>`;});}
 
-function calcDayScore(data, dateKey) {
-  const day = data.daily[dateKey];
-  if (!day) return { total: 0, survivalDone: 0, survivalTotal: 8, survivalPass: false };
-  const habits = day.habits || {};
-  const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
-  let total = 0, survivalDone = 0;
-  allLayers.forEach(layer => {
-    if (!phase.layers.includes(layer.id)) return;
-    layer.habits.forEach((h, i) => {
-      const key = h.freq === 'weekly' ? `w_${h.weekKey}` : `${layer.id}_${i}`;
-      if (habits[key]) {
-        total += h.pts;
-        if (layer.id === 'survival' && h.freq === 'daily') survivalDone++;
-      }
-    });
-  });
-  return { total, survivalDone, survivalTotal: 8, survivalPass: survivalDone >= 8 };
-}
+function renderInvest(data){const input=document.getElementById('investInput');input.value=data.daily[getDateKey()]?.invest||'';input.oninput=function(){const amount=parseInt(this.value)||0;const d=loadData();const dk=getDateKey();if(!d.daily[dk])d.daily[dk]={habits:{},invest:0,energy:{tight:'',loose:''},score:0,survivalPass:false};d.daily[dk].invest=amount;const idx=d.investHistory.findIndex(r=>r.date===dk);if(idx>=0)d.investHistory[idx].amount=amount;else d.investHistory.push({date:dk,amount});saveData(d);renderInvestGoals(d);};renderInvestGoals(data);}
+function renderInvestGoals(data){const total=calcInvestTotal(data);document.getElementById('investGoals').innerHTML=INVEST_GOALS.map(g=>{const pct=Math.min((total/g.target)*100,100);return `<div class="invest-goal"><span class="goal-name">${g.name}</span><div class="goal-bar"><div class="goal-fill" style="width:${pct}%;background:${g.color}"></div></div><span class="goal-val">¥${total.toLocaleString()}/${(g.target/10000).toFixed(0)}万</span></div>`;}).join('');}
 
-function checkPhaseUpgrade(data) {
-  const phase = PHASES.find(p => p.id === data.currentPhase);
-  if (!phase || phase.nextThreshold === null) return null;
-  const totalScore = calcAllScores(data);
-  if (phase.id === 'survival') {
-    let streak = 0;
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today); d.setDate(d.getDate() - i);
-      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      const info = calcDayScore(data, key);
-      if (info.survivalPass) streak++; else break;
-    }
-    if (streak >= 7) return 'stabilize';
-  }
-  if (phase.id === 'stabilize' && totalScore >= 206) return 'growth';
-  return null;
-}
+function renderHabits(data){const lc=document.getElementById('layersContainer');lc.innerHTML='';const phase=PHASES.find(p=>p.id===data.currentPhase);const vIds=phase?.layers||['survival'];allLayers.forEach(layer=>{const vis=vIds.includes(layer.id);let html=`<div class="habit-section ${!vis?'locked':''}"><div class="habit-section-header"><span class="badge ${layer.badgeClass}">${layer.badge}</span><span class="title">${layer.desc}</span></div>`;if(!vis){html+=`<div style="text-align:center;padding:16px;font-size:11px;color:var(--text-dim)">🔒 升级后解锁</div>`;}else{layer.habits.forEach((h,i)=>{const key=h.freq==='weekly'?`w_${h.weekKey}`:`${layer.id}_${i}`;const done=(data.daily[getDateKey()]?.habits?.[key])?'done':'';const ft=h.freq==='weekly'?'<span class="habit-freq">每周</span>':'';const hh=h.hint?`<div class="habit-hint">${h.hint}</div>`:'';const dd=h.detail?`<span class="habit-expand-btn" onclick="toggleDetail('detail_${layer.id}_${i}',event)">📖 指引</span><div class="habit-detail" id="detail_${layer.id}_${i}">${h.detail}</div>`:'';html+=`<div class="habit-item ${done} ${h.freq==='weekly'?'weekly':''}" onclick="toggleHabit('${layer.id}',${i})"><div class="habit-check">${done?'✓':''}</div><div class="habit-main"><div class="habit-label">${h.text} ${ft}</div><div class="habit-meta"><span class="habit-pts">+${h.pts}</span>${hh}</div></div></div>${dd}`;});}html+=`</div>`;lc.innerHTML+=html;});}
 
-function calcStreak(data) {
-  let streak = 0;
-  const today = new Date();
-  for (let i = 0; i < 365; i++) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const info = calcDayScore(data, key);
-    if (!info.total && i === 0) continue;
-    if (info.survivalPass || info.total > 0) streak++;
-    else if (i > 0) break;
-  }
-  return streak;
-}
+function toggleDetail(id,event){event.stopPropagation();const el=document.getElementById(id);if(el){el.classList.toggle('show');const btn=el.previousElementSibling;if(btn)btn.textContent=el.classList.contains('show')?'📖 收起':'📖 指引';}}
 
-function calcBestStreak(data) {
-  let best = 0, current = 0;
-  const dates = Object.keys(data.daily).sort();
-  for (const key of dates) {
-    const info = calcDayScore(data, key);
-    if (info.survivalPass || info.total > 0) current++;
-    else current = 0;
-    if (current > best) best = current;
-  }
-  return best;
-}
+function toggleHabit(layerId,idx){const layer=allLayers.find(l=>l.id===layerId);if(!layer)return;const h=layer.habits[idx];if(!h)return;const key=h.freq==='weekly'?`w_${h.weekKey}`:`${layerId}_${idx}`;const data=loadData();const dk=getDateKey();if(!data.daily[dk])data.daily[dk]={habits:{},invest:0,energy:{tight:'',loose:''},score:0,survivalPass:false};if(!data.daily[dk].habits)data.daily[dk].habits={};data.daily[dk].habits[key]=!data.daily[dk].habits[key];if(data.daily[dk].habits[key])data.xp[h.mod]=(data.xp[h.mod]||0)+h.pts;else data.xp[h.mod]=Math.max(0,(data.xp[h.mod]||0)-h.pts);let dt=0;const phase=PHASES.find(p=>p.id===data.currentPhase);const vIds=phase?.layers||['survival'];allLayers.forEach(l=>{if(!vIds.includes(l.id))return;l.habits.forEach((hh,ii)=>{const kk=hh.freq==='weekly'?`w_${hh.weekKey}`:`${l.id}_${ii}`;if(data.daily[dk].habits[kk])dt+=hh.pts;});});data.daily[dk].score=dt;data.daily[dk].survivalPass=calcDayScore(data,dk).survivalPass;saveData(data);render();}
 
-function calcInvestTotal(data) {
-  return (data.investHistory || []).reduce((s, r) => s + (r.amount || 0), 0);
-}
+function saveEnergyField(field,value){const data=loadData();const dk=getDateKey();if(!data.daily[dk])data.daily[dk]={habits:{},invest:0,energy:{tight:'',loose:''},score:0,survivalPass:false};if(!data.daily[dk].energy)data.daily[dk].energy={tight:'',loose:''};data.daily[dk].energy[field]=value;saveData(data);}
+function renderLogs(data){const logs=data.logs||[];document.getElementById('logTimeline').innerHTML=logs.slice(0,30).map(l=>`<div class="log-entry"><span class="log-date">${l.date}</span><span class="log-dot">●</span><span class="log-text">${l.text}</span></div>`).join('')||'<div style="font-size:11px;color:var(--text-dim)">还没有记录</div>';}
+function renderQuests(){document.getElementById('questList').innerHTML=QUESTS.map(q=>`<div class="quest-item"><span class="quest-icon">${q.icon}</span><div><div class="quest-name">${q.name}</div><div class="quest-desc">${q.desc}</div></div></div>`).join('');}
+function renderAlert(data){const box=document.getElementById('alertBox');let gd=0;const today=new Date();for(let i=1;i<=7;i++){const d=new Date(today);d.setDate(d.getDate()-i);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if((calcDayScore(data,key).total||0)>0)break;gd++;}if(gd>=3){box.className='alert-box show warn';box.innerHTML=`<span>⚠️</span> ${gd} 天没打卡了。没关系，今天只做一个习惯就好。`;}else{const ti=calcDayScore(data,getDateKey());if(ti.total===0){box.className='alert-box show';box.innerHTML=`<span>💡</span> 今天还没打卡。从最简单的开始就好 🐾`;}else{box.className='alert-box';}}}
 
-// ========== 渲染 ==========
-function render() {
-  const data = loadData();
-  const dk = getDateKey();
-  if (!data.daily[dk]) {
-    data.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
-    saveData(data);
-  }
-  const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
+function openReview(){const m=document.getElementById('reviewModal');m.classList.remove('hidden');const ah=[];allLayers.forEach(l=>l.habits.forEach(h=>ah.push(h.text)));const opt=ah.map(h=>`<option value="${h}">${h}</option>`).join('');document.getElementById('reviewBest').innerHTML='<option value="">-- 选择 --</option>'+opt;document.getElementById('reviewWorst').innerHTML='<option value="">-- 选择 --</option>'+opt;}
+function closeReview(){document.getElementById('reviewModal').classList.add('hidden');}
+function saveReview(){const data=loadData();data.reviews=data.reviews||[];data.reviews.push({date:getDateKey(),best:document.getElementById('reviewBest').value,worst:document.getElementById('reviewWorst').value,identity:parseInt(document.getElementById('reviewIdentity').value),note:document.getElementById('reviewNote').value});addLog(`🧭 周复盘：最有帮助=${document.getElementById('reviewBest').value||'无'}，最累=${document.getElementById('reviewWorst').value||'无'}，自我认同=${document.getElementById('reviewIdentity').value}/5`);saveData(data);closeReview();}
+function toggleSettings(){document.getElementById('settingsModal').classList.remove('hidden');}
+function closeSettings(){document.getElementById('settingsModal').classList.add('hidden');}
+function saveSettings(){const np=document.getElementById('settingsPhase').value;const data=loadData();if(np!==data.currentPhase){data.currentPhase=np;const n=PHASES.find(p=>p.id===np);data.phaseHistory.push({phase:np,startedAt:getDateKey(),note:'手动切换'});data.logs.unshift({date:getDateKey(),text:`⚙️ 手动切换至${n.icon} ${n.name}`});saveData(data);}closeSettings();render();}
+function exportData(){const data=loadData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`earth-online-${getDateKey()}.json`;a.click();}
 
-  // 检查升级
-  const upgrade = checkPhaseUpgrade(data);
-  if (upgrade) {
-    data.currentPhase = upgrade;
-    const np = PHASES.find(p => p.id === upgrade);
-    data.phaseHistory.push({ phase: upgrade, startedAt: dk, note: `自动升级: ${np.name}` });
-    data.logs.unshift({ date: dk, text: `🎉 进入${np.icon} ${np.name}阶段 — ${np.tag}` });
-    saveData(data);
-  }
+// ========== AI 对话 ==========
+let aiOpen=false;let aiHistory=[];let aiSending=false;
 
-  // 日期
-  const now = new Date();
-  const weekDays = ['日','一','二','三','四','五','六'];
-  document.getElementById('todayDate').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} 周${weekDays[now.getDay()]}`;
+function toggleAIChat(){aiOpen=!aiOpen;document.getElementById('aiChatPanel').classList.toggle('show',aiOpen);if(aiOpen){document.getElementById('aiApiKey').value=localStorage.getItem('eo-ai-key')||'';if(aiHistory.length===0){aiHistory=[];document.getElementById('aiMessages').innerHTML='';addBotMsg(getAIGreeting());}document.getElementById('notifDot').style.display='none';}}
 
-  // 累计总分
-  const totalScore = calcAllScores(data);
-  document.getElementById('totalScore').textContent = totalScore;
+function getAIGreeting(){const d=loadData();const p=PHASES.find(x=>x.id===d.currentPhase);return `你好！我是你的 **Earth Online 私人顾问** 🌍\n\n当前阶段：${p.icon} ${p.name}\n累计总分：${calcAllScores(d)} 分\n连续打卡：${calcStreak(d)} 天\n定投累计：¥${calcInvestTotal(d).toLocaleString()}\n\n你可以问我：\n- 我最近的状态怎么样？\n- 有什么习惯可以调整？\n- 我离下一阶段还差什么？\n- 给我今天的建议`;}}
 
-  // 身份
-  let identity = IDENTITIES[0].label;
-  for (const id of IDENTITIES) { if (totalScore >= id.minScore) identity = id.label; }
-  document.getElementById('identityBadge').textContent = identity;
+function saveApiKey(){localStorage.setItem('eo-ai-key',document.getElementById('aiApiKey').value.trim());if(aiHistory.length===0){aiHistory=[];document.getElementById('aiMessages').innerHTML='';addBotMsg(getAIGreeting());}}
 
-  // 阶段
-  const pt = document.getElementById('phaseTag');
-  pt.textContent = `${phase.icon} ${phase.name}`;
-  pt.className = `phase-tag ${phase.id === 'survival' ? 'red' : phase.id === 'stabilize' ? 'yellow' : 'green'}`;
+function buildContext(){const d=loadData();const p=PHASES.find(x=>x.id===d.currentPhase);let ctx=`【用户数据】\n阶段: ${p.icon}${p.name}\n总分: ${calcAllScores(d)}\n连续: ${calcStreak(d)}天\n最长: ${calcBestStreak(d)}天\n定投: ¥${calcInvestTotal(d).toLocaleString()}\n\n最近7天:\n`;for(let i=6;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;const info=calcDayScore(d,k);const dd=d.daily[k];ctx+=`${k}: ${info.total}分 ${info.survivalPass?'✅':'❌'}`;if(dd?.energy?.tight)ctx+=` 紧:${dd.energy.tight}`;if(dd?.energy?.loose)ctx+=` 松:${dd.energy.loose}`;ctx+='\n';}ctx+=`\n日志:\n${(d.logs||[]).slice(0,8).map(l=>`- ${l.date}: ${l.text}`).join('\n')}\n\n当前习惯:\n`;allLayers.filter(l=>p.layers.includes(l.id)).forEach(l=>{ctx+=`【${l.badge}】${l.desc}\n`;l.habits.forEach(h=>{ctx+=`  - ${h.text} (${h.freq==='weekly'?'每周':'每日'}) +${h.pts}分${h.hint?': '+h.hint:''}\n`;});});return ctx;}
 
-  // 进度
-  const pp = document.getElementById('phaseProgress');
-  const pl = document.getElementById('phaseLabel');
-  if (phase.nextThreshold !== null) {
-    const progress = Math.min(((totalScore - phase.threshold) / (phase.nextThreshold - phase.threshold)) * 100, 100);
-    pp.style.width = `${progress}%`;
-    pl.textContent = `距${PHASES[PHASES.indexOf(phase)+1]?.name || '下一阶段'}还差 ${Math.max(phase.nextThreshold - totalScore, 0)} 分`;
-  } else {
-    pp.style.width = '100%';
-    pl.textContent = '已达最高阶段 🌟';
-  }
+function addBotMsg(text){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-msg bot';d.innerHTML=text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function addUserMsg(text){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-msg user';d.textContent=text;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function addLoading(){const c=document.getElementById('aiMessages');const d=document.createElement('div');d.className='ai-msg bot loading';d.id='aiLoading';d.textContent='正在思考...';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function removeLoading(){const el=document.getElementById('aiLoading');if(el)el.remove();}
 
-  // 统计
-  document.getElementById('streakCount').textContent = calcStreak(data);
-  document.getElementById('bestStreak').textContent = calcBestStreak(data);
-  document.getElementById('daysActive').textContent = Object.keys(data.daily).filter(k => (data.daily[k].score||0) > 0).length;
+async function sendAIMessage(){const input=document.getElementById('aiInput');const text=input.value.trim();if(!text||aiSending)return;const apiKey=localStorage.getItem('eo-ai-key');if(!apiKey){addBotMsg('请先在上方输入你的百炼 API Key，然后点"保存"。');return;}aiSending=true;input.value='';addUserMsg(text);addLoading();document.getElementById('aiSendBtn').disabled=true;
+const ctx=buildContext();const sys=`你是 Earth Online 的私人AI顾问。用户是29岁女性，成都电信集成交付经理，备考重庆事业编（2027.2），已婚异地（老公天津读博）。\n\n挑战：工作人际消耗大内耗、宿舍环境不安全胸口发紧、睡眠不足、周末更焦虑。\n\n角色：基于实际数据给建议，温柔但直接，用数据说话但有同理心，帮看到进步也提醒调整，回答实用可操作。\n\n${ctx}`;
+const msgs=[{role:'system',content:sys},...aiHistory.slice(-6).map(m=>({role:m.role,content:m.content})),{role:'user',content:text}];
+try{const res=await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model:'qwen3.6-plus',messages:msgs,max_tokens:1024,temperature:0.7})});removeLoading();if(!res.ok){const e=await res.text();addBotMsg(`❌ API失败(${res.status})：${e}`);return;}const json=await res.json();const reply=json.choices?.[0]?.message?.content||'(无回复)';aiHistory.push({role:'user',content:text});aiHistory.push({role:'assistant',content:reply});addBotMsg(reply);}catch(err){removeLoading();addBotMsg(`❌ 网络错误：${err.message}`);}finally{aiSending=false;document.getElementById('aiSendBtn').disabled=false;}}
 
-  renderTrend(data);
-  renderModules(data);
-  renderInvest(data);
-  renderHabits(data);
-  renderLogs(data);
-  renderQuests();
-  renderAlert(data);
-
-  // 能量日记
-  const day = data.daily[dk];
-  const et = document.getElementById('energyTight');
-  const el = document.getElementById('energyLoose');
-  et.value = (day.energy?.tight) || '';
-  el.value = (day.energy?.loose) || '';
-  et.oninput = () => saveEnergyField('tight', et.value);
-  el.oninput = () => saveEnergyField('loose', el.value);
-
-  // 设置
-  document.getElementById('settingsPhase').value = data.currentPhase;
-}
-
-function renderTrend(data) {
-  const chart = document.getElementById('trendChart');
-  const today = new Date();
-  let maxScore = 1;
-  const scores = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const info = calcDayScore(data, key);
-    scores.push({ key, score: info.total, isToday: i === 0 });
-    if (info.total > maxScore) maxScore = info.total;
-  }
-  const days = ['日','一','二','三','四','五','六'];
-  chart.innerHTML = scores.map(s => {
-    const h = Math.max((s.score / maxScore) * 50, 4);
-    const dow = new Date(s.key).getDay();
-    return `<div class="trend-col">
-      <div class="trend-bar ${s.isToday ? 'today' : ''}" style="height:${h}px" title="${s.key}: ${s.score}分"></div>
-      <div class="trend-bar-label">${s.isToday ? '今' : '周' + days[dow]}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderModules(data) {
-  const grid = document.getElementById('statsGrid');
-  grid.innerHTML = '';
-  modules.forEach(m => {
-    const xp = data.xp[m.id] || 0;
-    let lvl = 0;
-    for (let i = LEVELS.length - 1; i >= 0; i--) { if (xp >= LEVELS[i]) { lvl = i; break; } }
-    const nextTarget = lvl < LEVELS.length - 1 ? LEVELS[lvl + 1] : LEVELS[lvl];
-    const prevTarget = LEVELS[lvl];
-    const progress = lvl < LEVELS.length - 1 ? Math.min(((xp - prevTarget) / (nextTarget - prevTarget)) * 100, 100) : 100;
-    grid.innerHTML += `<div class="stat-card"><div class="icon">${m.icon}</div><div class="name">${m.name}</div><div class="level" style="color:${m.color}">Lv ${lvl}</div><div class="xp">${xp}/${nextTarget}</div><div class="xp-bar"><div class="xp-bar-fill" style="width:${progress}%;background:${m.color}"></div></div></div>`;
-  });
-}
-
-function renderInvest(data) {
-  const input = document.getElementById('investInput');
-  input.value = data.daily[getDateKey()]?.invest || '';
-  input.oninput = function() {
-    const amount = parseInt(this.value) || 0;
-    const d = loadData();
-    const dk = getDateKey();
-    if (!d.daily[dk]) d.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
-    d.daily[dk].invest = amount;
-    const idx = d.investHistory.findIndex(r => r.date === dk);
-    if (idx >= 0) d.investHistory[idx].amount = amount;
-    else d.investHistory.push({ date: dk, amount });
-    saveData(d);
-    renderInvestGoals(d);
-  };
-  renderInvestGoals(data);
-}
-
-function renderInvestGoals(data) {
-  const total = calcInvestTotal(data);
-  document.getElementById('investGoals').innerHTML = INVEST_GOALS.map(g => {
-    const pct = Math.min((total / g.target) * 100, 100);
-    return `<div class="invest-goal">
-      <span class="goal-name">${g.name}</span>
-      <div class="goal-bar"><div class="goal-fill" style="width:${pct}%;background:${g.color}"></div></div>
-      <span class="goal-val">¥${total.toLocaleString()}/${(g.target/10000).toFixed(0)}万</span>
-    </div>`;
-  }).join('');
-}
-
-function renderHabits(data) {
-  const lc = document.getElementById('layersContainer');
-  lc.innerHTML = '';
-  const phase = PHASES.find(p => p.id === data.currentPhase);
-  const visibleIds = phase?.layers || ['survival'];
-
-  allLayers.forEach(layer => {
-    const visible = visibleIds.includes(layer.id);
-    let html = `<div class="habit-section ${!visible ? 'locked' : ''}">`;
-    html += `<div class="habit-section-header">`;
-    html += `<span class="badge ${layer.badgeClass}">${layer.badge}</span>`;
-    html += `<span class="title">${layer.desc}</span>`;
-    html += `</div>`;
-
-    if (!visible) {
-      html += `<div style="text-align:center;padding:16px;font-size:11px;color:var(--text-dim)">🔒 升级后解锁</div>`;
-    } else {
-      layer.habits.forEach((h, i) => {
-        const key = h.freq === 'weekly' ? `w_${h.weekKey}` : `${layer.id}_${i}`;
-        const done = (data.daily[getDateKey()]?.habits?.[key]) ? 'done' : '';
-        const freqTag = h.freq === 'weekly' ? '<span class="habit-freq">每周</span>' : '';
-        const hintHtml = h.hint ? `<div class="habit-hint">${h.hint}</div>` : '';
-        const detailHtml = h.detail ? `<div class="habit-expand-btn" onclick="toggleDetail('detail_${layer.id}_${i}', event)">📖 查看指引</div><div class="habit-detail" id="detail_${layer.id}_${i}">${h.detail}</div>` : '';
-
-        html += `<div class="habit-item ${done} ${h.freq === 'weekly' ? 'weekly' : ''}" onclick="toggleHabit('${layer.id}', ${i})">`;
-        html += `<div class="habit-check">${done ? '✓' : ''}</div>`;
-        html += `<div class="habit-main"><div class="habit-label">${h.text} ${freqTag}</div>`;
-        html += `<div class="habit-meta"><span class="habit-pts">+${h.pts}</span>${hintHtml}</div></div>`;
-        html += `</div>`;
-        if (h.detail) html += detailHtml;
-      });
-    }
-    html += `</div>`;
-    lc.innerHTML += html;
-  });
-}
-
-function toggleDetail(id, event) {
-  event.stopPropagation();
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.toggle('show');
-    const btn = el.previousElementSibling;
-    if (btn) btn.textContent = el.classList.contains('show') ? '📖 收起指引' : '📖 查看指引';
-  }
-}
-
-function toggleHabit(layerId, idx) {
-  const layer = allLayers.find(l => l.id === layerId);
-  if (!layer) return;
-  const h = layer.habits[idx];
-  if (!h) return;
-  const key = h.freq === 'weekly' ? `w_${h.weekKey}` : `${layerId}_${idx}`;
-
-  const data = loadData();
-  const dk = getDateKey();
-  if (!data.daily[dk]) data.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
-  if (!data.daily[dk].habits) data.daily[dk].habits = {};
-  data.daily[dk].habits[key] = !data.daily[dk].habits[key];
-
-  if (data.daily[dk].habits[key]) {
-    data.xp[h.mod] = (data.xp[h.mod] || 0) + h.pts;
-  } else {
-    data.xp[h.mod] = Math.max(0, (data.xp[h.mod] || 0) - h.pts);
-  }
-
-  let dayTotal = 0;
-  const phase = PHASES.find(p => p.id === data.currentPhase);
-  const visibleIds = phase?.layers || ['survival'];
-  allLayers.forEach(l => {
-    if (!visibleIds.includes(l.id)) return;
-    l.habits.forEach((hh, ii) => {
-      const kk = hh.freq === 'weekly' ? `w_${hh.weekKey}` : `${l.id}_${ii}`;
-      if (data.daily[dk].habits[kk]) dayTotal += hh.pts;
-    });
-  });
-  data.daily[dk].score = dayTotal;
-  data.daily[dk].survivalPass = calcDayScore(data, dk).survivalPass;
-  saveData(data);
-  render();
-}
-
-function saveEnergyField(field, value) {
-  const data = loadData();
-  const dk = getDateKey();
-  if (!data.daily[dk]) data.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
-  if (!data.daily[dk].energy) data.daily[dk].energy = { tight: '', loose: '' };
-  data.daily[dk].energy[field] = value;
-  saveData(data);
-}
-
-function renderLogs(data) {
-  const logs = data.logs || [];
-  document.getElementById('logTimeline').innerHTML = logs.slice(0, 30).map(l =>
-    `<div class="log-entry"><span class="log-date">${l.date}</span><span class="log-dot">●</span><span class="log-text">${l.text}</span></div>`
-  ).join('') || '<div style="font-size:11px;color:var(--text-dim)">还没有记录</div>';
-}
-
-function renderQuests() {
-  document.getElementById('questList').innerHTML = QUESTS.map(q =>
-    `<div class="quest-item"><span class="quest-icon">${q.icon}</span><div><div class="quest-name">${q.name}</div><div class="quest-desc">${q.desc}</div></div></div>`
-  ).join('');
-}
-
-function renderAlert(data) {
-  const box = document.getElementById('alertBox');
-  let gapDays = 0;
-  const today = new Date();
-  for (let i = 1; i <= 7; i++) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if ((calcDayScore(data, key).total || 0) > 0) break;
-    gapDays++;
-  }
-  if (gapDays >= 3) {
-    box.className = 'alert-box show warn';
-    box.innerHTML = `<span>⚠️</span> ${gapDays} 天没打卡了。没关系，今天只做一个习惯就好。`;
-  } else {
-    const todayInfo = calcDayScore(data, getDateKey());
-    if (todayInfo.total === 0) {
-      box.className = 'alert-box show';
-      box.innerHTML = `<span>💡</span> 今天还没打卡。从最简单的开始就好 🐾`;
-    } else {
-      box.className = 'alert-box';
-    }
-  }
-}
-
-// ========== 周复盘 ==========
-function openReview() {
-  const modal = document.getElementById('reviewModal');
-  modal.classList.remove('hidden');
-  const allHabits = [];
-  allLayers.forEach(l => l.habits.forEach(h => allHabits.push(h.text)));
-  const options = allHabits.map(h => `<option value="${h}">${h}</option>`).join('');
-  document.getElementById('reviewBest').innerHTML = '<option value="">-- 选择一个 --</option>' + options;
-  document.getElementById('reviewWorst').innerHTML = '<option value="">-- 选择一个 --</option>' + options;
-}
-function closeReview() { document.getElementById('reviewModal').classList.add('hidden'); }
-function saveReview() {
-  const data = loadData();
-  data.reviews = data.reviews || [];
-  data.reviews.push({
-    date: getDateKey(),
-    best: document.getElementById('reviewBest').value,
-    worst: document.getElementById('reviewWorst').value,
-    identity: parseInt(document.getElementById('reviewIdentity').value),
-    note: document.getElementById('reviewNote').value
-  });
-  addLog(`🧭 周复盘：最有帮助=${document.getElementById('reviewBest').value || '无'}，最累=${document.getElementById('reviewWorst').value || '无'}，自我认同=${document.getElementById('reviewIdentity').value}/5`);
-  saveData(data);
-  closeReview();
-}
-
-// ========== 设置 ==========
-function toggleSettings() { document.getElementById('settingsModal').classList.remove('hidden'); }
-function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
-function saveSettings() {
-  const newPhase = document.getElementById('settingsPhase').value;
-  const data = loadData();
-  if (newPhase !== data.currentPhase) {
-    data.currentPhase = newPhase;
-    const np = PHASES.find(p => p.id === newPhase);
-    data.phaseHistory.push({ phase: newPhase, startedAt: getDateKey(), note: '手动切换' });
-    data.logs.unshift({ date: getDateKey(), text: `⚙️ 手动切换至${np.icon} ${np.name}阶段` });
-    saveData(data);
-  }
-  closeSettings();
-  render();
-}
-
-function exportData() {
-  const data = loadData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `earth-online-${getDateKey()}.json`;
-  a.click();
-}
-
-// 自动检测新天
-let lastDate = getDateKey();
-setInterval(() => {
-  if (getDateKey() !== lastDate) { lastDate = getDateKey(); render(); }
-}, 60000);
-
+let lastDate=getDateKey();setInterval(()=>{if(getDateKey()!==lastDate){lastDate=getDateKey();render();}},60000);
 render();
 </script>
 </body>
