@@ -1,0 +1,19 @@
+# Private files - NEVER push to public repo
+.openclaw/
+memory/
+output/
+AGENTS.md
+DREAMS.md
+HEARTBEAT.md
+IDENTITY.md
+MEMORY.md
+SOUL.md
+TOOLS.md
+USER.md
+smart-switch.md
+人生路线规划_29到35岁_宝贝_2026-04-28.md
+理财计划-完整版_2026-04-28.md
+5年定投50万方案.md
+理财计划-执行版.md
+考编+定投实施方案.md
+六到位审核报告.md
