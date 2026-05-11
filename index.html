@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌍 Earth Online</title>
+<title>Earth Online</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -261,6 +262,12 @@
     margin-top: 4px;
   }
   .habit-detail .expand-btn:hover { text-decoration: underline; }
+  .habit-expand-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; color: var(--accent); cursor: pointer;
+    padding: 4px 0; margin-top: 2px;
+  }
+  .habit-expand-btn:hover { text-decoration: underline; }
 
   /* === 能量日记 === */
   .energy-section {
@@ -467,6 +474,7 @@
   <div class="footer-actions">
     <button class="footer-btn btn-review" onclick="openReview()">🧭 周复盘</button>
     <button class="footer-btn btn-export" onclick="exportData()">📤 导出</button>
+    <button class="footer-btn btn-settings" onclick="importData()">📥 导入</button>
     <button class="footer-btn btn-settings" onclick="toggleSettings()">⚙️ 设置</button>
   </div>
 </div>
@@ -894,6 +902,9 @@ function getDateKey() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
+function createDayData() {
+  return { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
+}
 function getWeekKey() {
   const d = new Date();
   const day = d.getDay();
@@ -938,21 +949,21 @@ function calcAllScores(data) {
 
 function calcDayScore(data, dateKey) {
   const day = data.daily[dateKey];
-  if (!day) return { total: 0, survivalDone: 0, survivalTotal: 8, survivalPass: false };
+  if (!day) return { total: 0, survivalPts: 0, survivalTotal: 8, survivalPass: false };
   const habits = day.habits || {};
   const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
-  let total = 0, survivalDone = 0;
+  let total = 0, survivalPts = 0;
   allLayers.forEach(layer => {
     if (!phase.layers.includes(layer.id)) return;
     layer.habits.forEach((h, i) => {
       const key = h.freq === 'weekly' ? `w_${h.weekKey}` : `${layer.id}_${i}`;
       if (habits[key]) {
         total += h.pts;
-        if (layer.id === 'survival' && h.freq === 'daily') survivalDone++;
+        if (layer.id === 'survival' && h.freq === 'daily') survivalPts += h.pts;
       }
     });
   });
-  return { total, survivalDone, survivalTotal: 8, survivalPass: survivalDone >= 8 };
+  return { total, survivalPts, survivalTotal: 8, survivalPass: survivalPts >= 8 };
 }
 
 function checkPhaseUpgrade(data) {
@@ -1009,7 +1020,7 @@ function render() {
   const data = loadData();
   const dk = getDateKey();
   if (!data.daily[dk]) {
-    data.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
+    data.daily[dk] = createDayData();
     saveData(data);
   }
   const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
@@ -1170,9 +1181,9 @@ function renderHabits(data) {
         const done = (data.daily[getDateKey()]?.habits?.[key]) ? 'done' : '';
         const freqTag = h.freq === 'weekly' ? '<span class="habit-freq">每周</span>' : '';
         const hintHtml = h.hint ? `<div class="habit-hint">${h.hint}</div>` : '';
-        const detailHtml = h.detail ? `<div class="habit-expand-btn" onclick="toggleDetail('detail_${layer.id}_${i}', event)">📖 查看指引</div><div class="habit-detail" id="detail_${layer.id}_${i}">${h.detail}</div>` : '';
+        const detailHtml = h.detail ? `<div class="habit-expand-btn" data-detail="detail_${layer.id}_${i}">📖 查看指引</div><div class="habit-detail" id="detail_${layer.id}_${i}">${h.detail}</div>` : '';
 
-        html += `<div class="habit-item ${done} ${h.freq === 'weekly' ? 'weekly' : ''}" onclick="toggleHabit('${layer.id}', ${i})">`;
+        html += `<div class="habit-item ${done} ${h.freq === 'weekly' ? 'weekly' : ''}" data-layer="${layer.id}" data-idx="${i}">`;
         html += `<div class="habit-check">${done ? '✓' : ''}</div>`;
         html += `<div class="habit-main"><div class="habit-label">${h.text} ${freqTag}</div>`;
         html += `<div class="habit-meta"><span class="habit-pts">+${h.pts}</span>${hintHtml}</div></div>`;
@@ -1185,17 +1196,24 @@ function renderHabits(data) {
   });
 }
 
-function toggleDetail(id, event) {
-  event.stopPropagation();
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.toggle('show');
-    const btn = el.previousElementSibling;
-    if (btn) btn.textContent = el.classList.contains('show') ? '📖 收起指引' : '📖 查看指引';
+// 事件委托：习惯点击和展开详情
+document.getElementById('layersContainer').addEventListener('click', function(e) {
+  const expandBtn = e.target.closest('.habit-expand-btn');
+  if (expandBtn) {
+    e.stopPropagation();
+    const detailId = expandBtn.dataset.detail;
+    const el = document.getElementById(detailId);
+    if (el) {
+      el.classList.toggle('show');
+      expandBtn.textContent = el.classList.contains('show') ? '📖 收起指引' : '📖 查看指引';
+    }
+    return;
   }
-}
 
-function toggleHabit(layerId, idx) {
+  const habitItem = e.target.closest('.habit-item');
+  if (!habitItem) return;
+  const layerId = habitItem.dataset.layer;
+  const idx = parseInt(habitItem.dataset.idx);
   const layer = allLayers.find(l => l.id === layerId);
   if (!layer) return;
   const h = layer.habits[idx];
@@ -1204,7 +1222,7 @@ function toggleHabit(layerId, idx) {
 
   const data = loadData();
   const dk = getDateKey();
-  if (!data.daily[dk]) data.daily[dk] = { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
+  if (!data.daily[dk]) data.daily[dk] = createDayData();
   if (!data.daily[dk].habits) data.daily[dk].habits = {};
   data.daily[dk].habits[key] = !data.daily[dk].habits[key];
 
@@ -1228,7 +1246,7 @@ function toggleHabit(layerId, idx) {
   data.daily[dk].survivalPass = calcDayScore(data, dk).survivalPass;
   saveData(data);
   render();
-}
+});
 
 function saveEnergyField(field, value) {
   const data = loadData();
@@ -1326,6 +1344,29 @@ function exportData() {
   a.href = URL.createObjectURL(blob);
   a.download = `earth-online-${getDateKey()}.json`;
   a.click();
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (!imported.meta?.version) { alert('不是有效的 Earth Online 数据文件'); return; }
+        if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
+        localStorage.setItem('earth-online-v2', JSON.stringify(imported));
+        addLog('📥 导入了备份数据');
+        render();
+      } catch { alert('文件解析失败，请确认格式正确'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 // 自动检测新天
