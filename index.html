@@ -1330,6 +1330,18 @@ function render() {
       needsSave = true;
     }
   }
+  // 修正 data.xp：从每日 xpGain 汇总，确保累计与每日分解一致
+  const xpFromDaily = {};
+  modules.forEach(m => xpFromDaily[m.id] = 0);
+  for (const day of Object.values(data.daily)) {
+    if (day.xpGain) {
+      modules.forEach(m => xpFromDaily[m.id] += (day.xpGain[m.id] || 0));
+    }
+  }
+  if (Object.keys(data.xp).some(k => data.xp[k] !== xpFromDaily[k])) {
+    data.xp = xpFromDaily;
+    needsSave = true;
+  }
   if (needsSave) saveData(data);
   const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
 
