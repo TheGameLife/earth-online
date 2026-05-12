@@ -973,6 +973,7 @@ function saveData(data) {
 
 // ========== 云端同步 ==========
 async function syncToCloud(data) {
+  data = data || loadData();
   if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
     document.getElementById('syncStatus').textContent = '未配置云端存储';
     return;
