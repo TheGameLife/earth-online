@@ -534,6 +534,11 @@
       <div id="backupSection" style="margin-top:8px;display:none">
         <button class="modal-cancel" onclick="restoreBackup()" style="width:100%;font-size:11px">恢复拉取前的本地备份</button>
       </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)">
+        <label style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px">同步 Token</label>
+        <input type="password" id="syncTokenInput" placeholder="粘贴 GitHub Personal Access Token" style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.06);border:1px solid #334155;border-radius:6px;color:var(--text);font-size:11px;outline:none">
+        <button class="modal-save" onclick="saveSyncToken()" style="width:100%;margin-top:6px;font-size:11px">保存 Token</button>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeSettings()">取消</button>
@@ -545,9 +550,15 @@
 <script>
 // ========== 配置 ==========
 const SYNC_CONFIG = {
-  binId: '6a01f0de250b1311c334ecc0',
-  apiKey: '$2a$10$cHMsLdBYZN58OJJe9ISKKePae9hmV0X/EJK7IatQiDDaRT0yMVA9a'
+  gistId: '718e0445622738c9e3df99d63501759f',
+  fileName: 'earth-online-data.json'
 };
+function getSyncToken() {
+  return localStorage.getItem('eo-sync-token') || '';
+}
+function setSyncToken(token) {
+  localStorage.setItem('eo-sync-token', token);
+}
 const LEVELS = [0, 50, 150, 350, 600, 1000];
 const modules = [
   { id: 'hp', name: '健康', icon: '💪', color: '#22c55e' },
@@ -977,20 +988,25 @@ function saveData(data) {
 // ========== 云端同步 ==========
 async function syncToCloud(data) {
   data = data || loadData();
-  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
-    document.getElementById('syncStatus').textContent = '未配置云端存储';
+  const token = getSyncToken();
+  if (!SYNC_CONFIG.gistId || !token) {
+    document.getElementById('syncStatus').textContent = '未配置同步 Token';
     return;
   }
   try {
     document.getElementById('syncStatus').textContent = '推送中...';
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
-      method: 'PUT',
+    const res = await fetch(`https://api.github.com/gists/${SYNC_CONFIG.gistId}`, {
+      method: 'PATCH',
       headers: {
+        'Authorization': `token ${token}`,
         'Content-Type': 'application/json',
-        'X-Master-Key': SYNC_CONFIG.apiKey,
-        'X-Bin-Meta': 'false'
+        'Accept': 'application/vnd.github+json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        files: {
+          [SYNC_CONFIG.fileName]: { content: JSON.stringify(data) }
+        }
+      })
     });
     if (!res.ok) {
       const errText = await res.text();
@@ -1002,17 +1018,24 @@ async function syncToCloud(data) {
   }
 }
 async function syncFromCloud() {
-  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
-    document.getElementById('syncStatus').textContent = '未配置云端存储';
+  const token = getSyncToken();
+  if (!SYNC_CONFIG.gistId || !token) {
+    document.getElementById('syncStatus').textContent = '未配置同步 Token';
     return;
   }
   try {
     document.getElementById('syncStatus').textContent = '拉取中...';
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
-      headers: { 'X-Master-Key': SYNC_CONFIG.apiKey }
+    const res = await fetch(`https://api.github.com/gists/${SYNC_CONFIG.gistId}`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json'
+      }
     });
     if (!res.ok) throw new Error(res.status);
-    const { record } = await res.json();
+    const gist = await res.json();
+    const fileContent = gist.files[SYNC_CONFIG.fileName]?.content;
+    if (!fileContent) throw new Error('云端没有数据文件');
+    const record = JSON.parse(fileContent);
     if (!record?.meta?.version) throw new Error('云端数据格式无效');
     if (!confirm('云端数据将覆盖本地数据（本地数据已备份），确定继续？')) {
       document.getElementById('syncStatus').textContent = '已取消';
@@ -1027,21 +1050,6 @@ async function syncFromCloud() {
   } catch(e) {
     document.getElementById('syncStatus').textContent = `拉取失败: ${e.message}`;
   }
-}
-function syncToCloudSilent(data) {
-  if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) return;
-  const localDays = Object.keys(data.daily || {}).length;
-  if (localDays < 2) return;
-  if (!navigator.onLine) return;
-  fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Master-Key': SYNC_CONFIG.apiKey,
-      'X-Bin-Meta': 'false'
-    },
-    body: JSON.stringify(data)
-  }).catch(() => {});
 }
 function addLog(text) {
   const data = loadData();
@@ -1436,12 +1444,19 @@ function toggleSettings() {
   document.getElementById('settingsModal').classList.remove('hidden');
   const data = loadData();
   const lastSync = data.updatedAt ? new Date(data.updatedAt).toLocaleString('zh-CN') : '未知';
-  const configured = SYNC_CONFIG.binId && SYNC_CONFIG.apiKey;
-  document.getElementById('syncStatus').textContent = configured
+  const token = getSyncToken();
+  document.getElementById('syncStatus').textContent = token
     ? `上次同步: ${lastSync} · 已配置`
-    : `未配置 · 请在代码中填写 SYNC_CONFIG 的 binId 和 apiKey`;
+    : `未配置 · 请在下方填入 Token`;
   const hasBackup = localStorage.getItem('earth-online-v2-backup');
   document.getElementById('backupSection').style.display = hasBackup ? 'block' : 'none';
+  document.getElementById('syncTokenInput').value = token || '';
+}
+function saveSyncToken() {
+  const token = document.getElementById('syncTokenInput').value.trim();
+  if (!token) { alert('Token 不能为空'); return; }
+  setSyncToken(token);
+  alert('Token 已保存');
 }
 function restoreBackup() {
   const backup = localStorage.getItem('earth-online-v2-backup');
