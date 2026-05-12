@@ -1206,13 +1206,41 @@ function renderStats() {
   const days = Object.keys(data.daily).sort().reverse();
   if (days.length === 0) { container.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">还没有数据</div>'; return; }
 
-  // 累计 XP 展示
-  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">累计 XP：`;
+  // 累计 XP + 当前有效 XP
+  const lifetimeXP = calcAllScores(data);
+
+  // 计算当前有效 XP（从每日 xpGain 汇总，反映当前实际勾中状态）
+  const currentXP = {};
+  modules.forEach(m => currentXP[m.id] = 0);
+  let currentTotal = 0;
+  for (const day of Object.values(data.daily)) {
+    if (day.xpGain) {
+      modules.forEach(m => {
+        const v = day.xpGain[m.id] || 0;
+        currentXP[m.id] = (currentXP[m.id] || 0) + v;
+      });
+    }
+  }
+  currentTotal = Object.values(currentXP).reduce((s, v) => s + v, 0);
+
+  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">累计 XP（历史所有打卡）：`;
   html += modules.map(m => {
     const v = data.xp[m.id] || 0;
     return v ? `<span style="color:${m.color}">${m.icon}${v}</span>` : '';
   }).filter(Boolean).join(' · ');
-  html += ` = <b style="color:var(--accent)">${calcAllScores(data)}</b>分</div>`;
+  html += ` = <b style="color:var(--accent)">${lifetimeXP}</b>分</div>`;
+
+  if (currentTotal !== lifetimeXP) {
+    html += `<div style="font-size:11px;color:var(--accent);margin-bottom:8px">当前有效 XP（每日分解合计）：`;
+    html += modules.map(m => {
+      const v = currentXP[m.id] || 0;
+      return v ? `<span style="color:${m.color}">${m.icon}${v}</span>` : '';
+    }).filter(Boolean).join(' · ');
+    html += ` = <b>${currentTotal}</b>分</div>`;
+    html += `<div style="font-size:10px;color:var(--text-dim);margin-bottom:12px">差值 ${lifetimeXP - currentTotal} 分 = 之前打卡后又取消勾选的习惯</div>`;
+  } else {
+    html += `<div style="height:8px"></div>`;
+  }
 
   // 按月分组
   const months = {};
