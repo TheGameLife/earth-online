@@ -511,6 +511,7 @@
   <div class="footer-actions">
     <button class="footer-btn btn-export" onclick="openStats()">📊 统计</button>
     <button class="footer-btn btn-review" onclick="openReview()">🧭 周复盘</button>
+    <button class="footer-btn btn-review" onclick="openEnergyHistory()">⚡ 能量日记</button>
     <button class="footer-btn btn-export" onclick="exportData()">📤 导出</button>
     <button class="footer-btn btn-settings" onclick="toggleSettings()">⚙️ 设置</button>
   </div>
@@ -556,6 +557,20 @@
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeReview()">取消</button>
       <button class="modal-save" onclick="saveReview()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 能量日记历史弹窗 -->
+<div class="modal-overlay hidden" id="energyModal">
+  <div class="modal-box" style="max-width:450px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2>⚡ 能量日记</h2>
+      <button class="modal-cancel" onclick="openRandomEnergy()" style="flex:none;width:auto;padding:6px 12px;font-size:11px" title="随机一天">🎲 随机</button>
+    </div>
+    <div id="energyContent" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeEnergy()">关闭</button>
     </div>
   </div>
 </div>
@@ -1309,6 +1324,58 @@ function toggleDayDetail(row, dateKey) {
   if (!detail) return;
   const isShow = detail.classList.toggle('show');
   row.querySelector('.stats-day-score').textContent = isShow ? `▼` : dateKey.slice(8);
+}
+
+// ========== 能量日记历史 ==========
+function openEnergyHistory() {
+  document.getElementById('energyModal').classList.remove('hidden');
+  renderEnergyHistory();
+}
+function closeEnergy() { document.getElementById('energyModal').classList.add('hidden'); }
+
+function renderEnergyHistory() {
+  const data = loadData();
+  const container = document.getElementById('energyContent');
+  const days = Object.keys(data.daily).sort().reverse();
+  const entries = days.filter(d => {
+    const e = data.daily[d].energy;
+    return e && (e.tight || e.loose);
+  });
+  if (entries.length === 0) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:20px">还没有能量日记</div>';
+    return;
+  }
+  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">共 ${entries.length} 条</div>`;
+  entries.forEach(d => {
+    const e = data.daily[d].energy;
+    html += `<div class="energy-entry" style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">`;
+    html += `<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">${d}</div>`;
+    if (e.tight) html += `<div style="font-size:12px;margin-bottom:3px"><span style="color:var(--red)">😰</span> ${e.tight}</div>`;
+    if (e.loose) html += `<div style="font-size:12px"><span style="color:var(--green)">😌</span> ${e.loose}</div>`;
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function openRandomEnergy() {
+  const data = loadData();
+  const days = Object.keys(data.daily).filter(d => {
+    const e = data.daily[d].energy;
+    return e && (e.tight || e.loose);
+  });
+  if (days.length === 0) return;
+  const randomDay = days[Math.floor(Math.random() * days.length)];
+  const e = data.daily[randomDay].energy;
+  const container = document.getElementById('energyContent');
+  let html = `<div style="font-size:11px;color:var(--accent);margin-bottom:12px">🎲 随机到 ${randomDay}</div>`;
+  html += `<div style="padding:10px;background:rgba(99,102,241,0.06);border-radius:8px;border:1px solid rgba(99,102,241,0.12)">`;
+  if (e.tight) html += `<div style="font-size:13px;margin-bottom:8px"><span style="color:var(--red)">😰</span> ${e.tight}</div>`;
+  else html += `<div style="font-size:13px;margin-bottom:8px"><span style="color:var(--text-dim)">😰 无记录</span></div>`;
+  if (e.loose) html += `<div style="font-size:13px"><span style="color:var(--green)">😌</span> ${e.loose}</div>`;
+  else html += `<div style="font-size:13px"><span style="color:var(--text-dim)">😌 无记录</span></div>`;
+  html += `</div>`;
+  html += `<div style="margin-top:12px;text-align:center"><button class="modal-save" onclick="openRandomEnergy()" style="width:auto;padding:8px 20px;font-size:12px">🎲 再来一天</button></div>`;
+  container.innerHTML = html;
 }
 
 // ========== 渲染 ==========
