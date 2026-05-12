@@ -967,7 +967,7 @@ function getDateKey() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function createDayData() {
-  return { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false };
+  return { habits: {}, invest: 0, energy: {tight:'',loose:''}, score: 0, survivalPass: false, xpGain: {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0} };
 }
 function getWeekKey() {
   const d = new Date();
@@ -1206,6 +1206,14 @@ function renderStats() {
   const days = Object.keys(data.daily).sort().reverse();
   if (days.length === 0) { container.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">还没有数据</div>'; return; }
 
+  // 累计 XP 展示
+  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">累计 XP：`;
+  html += modules.map(m => {
+    const v = data.xp[m.id] || 0;
+    return v ? `<span style="color:${m.color}">${m.icon}${v}</span>` : '';
+  }).filter(Boolean).join(' · ');
+  html += ` = <b style="color:var(--accent)">${calcAllScores(data)}</b>分</div>`;
+
   // 按月分组
   const months = {};
   days.forEach(d => {
@@ -1214,14 +1222,22 @@ function renderStats() {
     months[ym].push(d);
   });
 
-  let html = '';
   for (const [ym, dates] of Object.entries(months).reverse()) {
+    // 用存储的 score 汇总，不用重新计算
     let monthTotal = 0;
     const monthModScores = {};
     modules.forEach(m => monthModScores[m.id] = 0);
 
     dates.forEach(d => {
-      const ms = calcDayModuleScores(data, d);
+      const day = data.daily[d];
+      // 优先用存储的 xpGain，回退到重新计算
+      let ms;
+      if (day && day.xpGain) {
+        ms = {};
+        modules.forEach(m => ms[m.id] = day.xpGain[m.id] || 0);
+      } else {
+        ms = calcDayModuleScores(data, d);
+      }
       let ds = 0;
       for (const [k, v] of Object.entries(ms)) { ds += v; monthModScores[k] = (monthModScores[k]||0) + v; }
       monthTotal += ds;
@@ -1233,7 +1249,14 @@ function renderStats() {
     </div>`;
 
     dates.forEach(d => {
-      const ms = calcDayModuleScores(data, d);
+      const day = data.daily[d];
+      let ms;
+      if (day && day.xpGain) {
+        ms = {};
+        modules.forEach(m => ms[m.id] = day.xpGain[m.id] || 0);
+      } else {
+        ms = calcDayModuleScores(data, d);
+      }
       let ds = 0;
       for (const v of Object.values(ms)) ds += v;
       const maxMod = Math.max(...Object.values(ms), 1);
@@ -1278,6 +1301,17 @@ function render() {
     data.daily[dk] = createDayData();
     saveData(data);
   }
+  // 迁移：给旧数据添加 xpGain 字段
+  let needsSave = false;
+  for (const [dateKey, day] of Object.entries(data.daily)) {
+    if (!day.xpGain) {
+      day.xpGain = {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0};
+      const ms = calcDayModuleScores(data, dateKey);
+      for (const [k, v] of Object.entries(ms)) day.xpGain[k] = v;
+      needsSave = true;
+    }
+  }
+  if (needsSave) saveData(data);
   const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
 
   // 检查升级
@@ -1483,8 +1517,12 @@ document.getElementById('layersContainer').addEventListener('click', function(e)
 
   if (data.daily[dk].habits[key]) {
     data.xp[h.mod] = (data.xp[h.mod] || 0) + h.pts;
+    data.daily[dk].xpGain = data.daily[dk].xpGain || {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0};
+    data.daily[dk].xpGain[h.mod] = (data.daily[dk].xpGain[h.mod] || 0) + h.pts;
   } else {
     data.xp[h.mod] = Math.max(0, (data.xp[h.mod] || 0) - h.pts);
+    data.daily[dk].xpGain = data.daily[dk].xpGain || {hp:0,mp:0,gp:0,ap:0,sp:0,rp:0};
+    data.daily[dk].xpGain[h.mod] = Math.max(0, (data.daily[dk].xpGain[h.mod] || 0) - h.pts);
   }
 
   let dayTotal = 0;
