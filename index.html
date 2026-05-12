@@ -531,6 +531,9 @@
         <button class="modal-save" onclick="syncFromCloud()" id="syncPullBtn" style="flex:1">⬇️ 拉取云端</button>
         <button class="modal-save" onclick="syncToCloud()" id="syncPushBtn" style="flex:1">⬆️ 推送云端</button>
       </div>
+      <div id="backupSection" style="margin-top:8px;display:none">
+        <button class="modal-cancel" onclick="restoreBackup()" style="width:100%;font-size:11px">恢复拉取前的本地备份</button>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeSettings()">取消</button>
@@ -971,17 +974,24 @@ function saveData(data) {
 // ========== 云端同步 ==========
 async function syncToCloud(data) {
   if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
-    document.getElementById('syncStatus').textContent = '未配置云端存储，请在代码 SYNC_CONFIG 中填入 binId 和 apiKey';
+    document.getElementById('syncStatus').textContent = '未配置云端存储';
     return;
   }
   try {
     document.getElementById('syncStatus').textContent = '推送中...';
     const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': SYNC_CONFIG.apiKey },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': SYNC_CONFIG.apiKey,
+        'X-Bin-Meta': 'false'
+      },
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error(res.status);
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`${res.status}: ${errText.substring(0, 100)}`);
+    }
     document.getElementById('syncStatus').textContent = `已推送 ${getDateKey()}`;
   } catch(e) {
     document.getElementById('syncStatus').textContent = `推送失败: ${e.message}`;
@@ -989,18 +999,23 @@ async function syncToCloud(data) {
 }
 async function syncFromCloud() {
   if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) {
-    document.getElementById('syncStatus').textContent = '未配置云端存储，请在代码 SYNC_CONFIG 中填入 binId 和 apiKey';
+    document.getElementById('syncStatus').textContent = '未配置云端存储';
     return;
   }
   try {
     document.getElementById('syncStatus').textContent = '拉取中...';
+    const localBackup = localStorage.getItem('earth-online-v2');
     const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
       headers: { 'X-Master-Key': SYNC_CONFIG.apiKey }
     });
     if (!res.ok) throw new Error(res.status);
     const { record } = await res.json();
-    if (!record?.meta?.version) throw new Error('无效数据');
-    if (!confirm('云端数据将覆盖本地数据，确定继续？')) { document.getElementById('syncStatus').textContent = '已取消'; return; }
+    if (!record?.meta?.version) throw new Error('云端数据格式无效');
+    if (!confirm('云端数据将覆盖本地数据（本地数据已备份），确定继续？')) {
+      document.getElementById('syncStatus').textContent = '已取消';
+      return;
+    }
+    localStorage.setItem('earth-online-v2-backup', localBackup || '');
     localStorage.setItem('earth-online-v2', JSON.stringify(record));
     addLog('⬇️ 从云端拉取了数据');
     document.getElementById('syncStatus').textContent = `已拉取 ${getDateKey()}`;
@@ -1013,7 +1028,11 @@ function syncToCloudSilent(data) {
   if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) return;
   fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'X-Master-Key': SYNC_CONFIG.apiKey },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': SYNC_CONFIG.apiKey,
+      'X-Bin-Meta': 'false'
+    },
     body: JSON.stringify(data)
   }).catch(() => {});
 }
@@ -1414,6 +1433,17 @@ function toggleSettings() {
   document.getElementById('syncStatus').textContent = configured
     ? `上次同步: ${lastSync} · 已配置`
     : `未配置 · 请在代码中填写 SYNC_CONFIG 的 binId 和 apiKey`;
+  const hasBackup = localStorage.getItem('earth-online-v2-backup');
+  document.getElementById('backupSection').style.display = hasBackup ? 'block' : 'none';
+}
+function restoreBackup() {
+  const backup = localStorage.getItem('earth-online-v2-backup');
+  if (!backup) { alert('没有找到备份数据'); return; }
+  if (!confirm('确定要恢复备份？当前数据将被覆盖。')) return;
+  localStorage.setItem('earth-online-v2', backup);
+  addLog('🔄 恢复了本地备份');
+  render();
+  document.getElementById('backupSection').style.display = 'none';
 }
 function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
 function saveSettings() {
