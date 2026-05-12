@@ -1694,8 +1694,12 @@ function renderAlert(data) {
 function openReview() {
   const modal = document.getElementById('reviewModal');
   modal.classList.remove('hidden');
+  const data = loadData();
+  const phase = PHASES.find(p => p.id === data.currentPhase) || PHASES[0];
   const allHabits = [];
-  allLayers.forEach(l => l.habits.forEach(h => allHabits.push(h.text)));
+  allLayers.forEach(l => {
+    if (phase.layers.includes(l.id)) l.habits.forEach(h => allHabits.push(h.text));
+  });
   const options = allHabits.map(h => `<option value="${h}">${h}</option>`).join('');
   document.getElementById('reviewBest').innerHTML = '<option value="">-- 选择一个 --</option>' + options;
   document.getElementById('reviewWorst').innerHTML = '<option value="">-- 选择一个 --</option>' + options;
