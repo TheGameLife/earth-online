@@ -76,6 +76,10 @@
   .score-hero-left .label { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
   .score-hero-left .big { font-size: 42px; font-weight: 900; color: #818cf8; line-height: 1; }
   .score-hero-left .unit { font-size: 14px; color: var(--text-dim); margin-left: 4px; }
+  .score-hero-center { text-align: center; flex-shrink: 0; }
+  .score-hero-center .label { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .score-hero-center .big { font-size: 42px; font-weight: 900; color: #4ade80; line-height: 1; }
+  .score-hero-center .unit { font-size: 14px; color: var(--text-dim); margin-left: 4px; }
   .score-hero-right { text-align: right; flex-shrink: 0; }
   .identity-badge {
     display: inline-block;
@@ -423,6 +427,10 @@
       <div class="score-hero-left">
         <div class="label">累计总分</div>
         <div><span class="big" id="totalScore">0</span><span class="unit">分</span></div>
+      </div>
+      <div class="score-hero-center">
+        <div class="label">今日分数</div>
+        <div><span class="big" id="todayScore">0</span><span class="unit">分</span></div>
       </div>
       <div class="score-hero-right">
         <div class="identity-badge" id="identityBadge">🌱 开始的人</div>
@@ -1203,44 +1211,27 @@ function closeStats() { document.getElementById('statsModal').classList.add('hid
 function renderStats() {
   const data = loadData();
   const container = document.getElementById('statsContent');
-  const days = Object.keys(data.daily).sort().reverse();
-  if (days.length === 0) { container.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">还没有数据</div>'; return; }
+  const todayKey = getDateKey();
+  // 统计面板排除今天，只显示昨天及之前
+  const days = Object.keys(data.daily).filter(d => d !== todayKey).sort().reverse();
+  if (days.length === 0) { container.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">还没有历史数据，今天的数据不会显示在统计中</div>'; return; }
 
-  // 累计 XP + 当前有效 XP
-  const lifetimeXP = calcAllScores(data);
-
-  // 计算当前有效 XP（从每日 xpGain 汇总，反映当前实际勾中状态）
-  const currentXP = {};
-  modules.forEach(m => currentXP[m.id] = 0);
-  let currentTotal = 0;
+  // 从每日 xpGain 汇总计算累计 XP，保证与每日分解一致
+  const totalXP = {};
+  modules.forEach(m => totalXP[m.id] = 0);
   for (const day of Object.values(data.daily)) {
     if (day.xpGain) {
-      modules.forEach(m => {
-        const v = day.xpGain[m.id] || 0;
-        currentXP[m.id] = (currentXP[m.id] || 0) + v;
-      });
+      modules.forEach(m => totalXP[m.id] += (day.xpGain[m.id] || 0));
     }
   }
-  currentTotal = Object.values(currentXP).reduce((s, v) => s + v, 0);
+  const totalScore = Object.values(totalXP).reduce((s, v) => s + v, 0);
 
-  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">累计 XP（历史所有打卡）：`;
+  let html = `<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">累计 XP：`;
   html += modules.map(m => {
-    const v = data.xp[m.id] || 0;
+    const v = totalXP[m.id] || 0;
     return v ? `<span style="color:${m.color}">${m.icon}${v}</span>` : '';
   }).filter(Boolean).join(' · ');
-  html += ` = <b style="color:var(--accent)">${lifetimeXP}</b>分</div>`;
-
-  if (currentTotal !== lifetimeXP) {
-    html += `<div style="font-size:11px;color:var(--accent);margin-bottom:8px">当前有效 XP（每日分解合计）：`;
-    html += modules.map(m => {
-      const v = currentXP[m.id] || 0;
-      return v ? `<span style="color:${m.color}">${m.icon}${v}</span>` : '';
-    }).filter(Boolean).join(' · ');
-    html += ` = <b>${currentTotal}</b>分</div>`;
-    html += `<div style="font-size:10px;color:var(--text-dim);margin-bottom:12px">差值 ${lifetimeXP - currentTotal} 分 = 之前打卡后又取消勾选的习惯</div>`;
-  } else {
-    html += `<div style="height:8px"></div>`;
-  }
+  html += ` = <b style="color:var(--accent)">${totalScore}</b>分</div>`;
 
   // 按月分组
   const months = {};
@@ -1360,6 +1351,10 @@ function render() {
   // 累计总分
   const totalScore = calcAllScores(data);
   document.getElementById('totalScore').textContent = totalScore;
+
+  // 今日分数（实时，基于当前勾选状态）
+  const todayInfo = calcDayScore(data, dk);
+  document.getElementById('todayScore').textContent = todayInfo.total;
 
   // 身份
   let identity = IDENTITIES[0].label;
