@@ -1050,6 +1050,62 @@ function saveData(data) {
 }
 
 // ========== 云端同步 ==========
+let _syncDebounceTimer = null;
+function syncPushSilent() {
+  clearTimeout(_syncDebounceTimer);
+  _syncDebounceTimer = setTimeout(() => {
+    const token = getSyncToken();
+    if (!SYNC_CONFIG.gistId || !token) return;
+    const data = loadData();
+    fetch(`https://api.github.com/gists/${SYNC_CONFIG.gistId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json'
+      },
+      body: JSON.stringify({
+        files: {
+          [SYNC_CONFIG.fileName]: { content: JSON.stringify(data) }
+        }
+      })
+    }).catch(() => {});
+  }, 2000);
+}
+
+async function syncPullSilent() {
+  const token = getSyncToken();
+  if (!SYNC_CONFIG.gistId || !token) return;
+  try {
+    const res = await fetch(`https://api.github.com/gists/${SYNC_CONFIG.gistId}`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+    if (!res.ok) return;
+    const gist = await res.json();
+    const fileContent = gist.files[SYNC_CONFIG.fileName]?.content;
+    if (!fileContent) return;
+    const cloud = JSON.parse(fileContent);
+    if (!cloud?.meta?.version) return;
+
+    const local = loadData();
+    const localDays = Object.keys(local.daily || {}).length;
+    const cloudDays = Object.keys(cloud.daily || {}).length;
+
+    // 只在云端数据更新时才拉取
+    if (cloudDays > localDays || (cloudDays === localDays && (cloud.updatedAt || 0) > (local.updatedAt || 0))) {
+      localStorage.setItem('earth-online-v2-backup', JSON.stringify(local));
+      cloud.logs = cloud.logs || [];
+      cloud.logs.unshift({ date: getDateKey(), text: '🔄 自动同步拉取了云端数据' });
+      localStorage.setItem('earth-online-v2', JSON.stringify(cloud));
+      _cachedData = null;
+      render();
+    }
+  } catch(e) {}
+}
+
 async function syncToCloud(data) {
   data = data || loadData();
   const token = getSyncToken();
@@ -1535,6 +1591,7 @@ function renderInvest(data) {
     else d.investHistory.push({ date: dk, amount });
     saveData(d);
     renderInvestGoals(d);
+    syncPushSilent();
   };
   renderInvestGoals(data);
 }
@@ -1642,6 +1699,7 @@ document.getElementById('layersContainer').addEventListener('click', function(e)
   data.daily[dk].survivalPass = calcDayScore(data, dk).survivalPass;
   saveData(data);
   render();
+  syncPushSilent();
 });
 
 function saveEnergyField(field, value) {
@@ -1651,6 +1709,7 @@ function saveEnergyField(field, value) {
   if (!data.daily[dk].energy) data.daily[dk].energy = { tight: '', loose: '' };
   data.daily[dk].energy[field] = value;
   saveData(data);
+  syncPushSilent();
 }
 
 function renderLogs(data) {
@@ -1717,6 +1776,7 @@ function saveReview() {
   });
   addLog(`🧭 周复盘：最有帮助=${document.getElementById('reviewBest').value || '无'}，最累=${document.getElementById('reviewWorst').value || '无'}，自我认同=${document.getElementById('reviewIdentity').value}/5`);
   saveData(data);
+  syncPushSilent();
   closeReview();
 }
 
@@ -1792,6 +1852,7 @@ function importData() {
         data.logs.unshift({ date: getDateKey(), text: '📥 导入了备份数据' });
         saveData(data);
         render();
+        syncPushSilent();
       } catch { alert('文件解析失败，请确认格式正确'); }
     };
     reader.readAsText(file);
@@ -1806,6 +1867,8 @@ setInterval(() => {
 }, 60000);
 
 render();
+// 自动拉取云端（页面加载时）
+syncPullSilent();
 </script>
 </body>
 </html>
