@@ -1482,8 +1482,12 @@ function importData() {
         const imported = JSON.parse(e.target.result);
         if (!imported.meta?.version) { alert('不是有效的 Earth Online 数据文件'); return; }
         if (!confirm('导入将覆盖当前所有数据，确定继续？')) return;
+        _cachedData = null;
         localStorage.setItem('earth-online-v2', JSON.stringify(imported));
-        addLog('📥 导入了备份数据');
+        const data = loadData();
+        data.logs = data.logs || [];
+        data.logs.unshift({ date: getDateKey(), text: '📥 导入了备份数据' });
+        saveData(data);
         render();
       } catch { alert('文件解析失败，请确认格式正确'); }
     };
