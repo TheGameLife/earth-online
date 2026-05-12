@@ -972,7 +972,6 @@ function defaultData() {
 function saveData(data) {
   data.updatedAt = Date.now();
   localStorage.setItem('earth-online-v2', JSON.stringify(data));
-  syncToCloudSilent(data);
 }
 
 // ========== 云端同步 ==========
@@ -1510,7 +1509,7 @@ setInterval(() => {
   if (getDateKey() !== lastDate) { lastDate = getDateKey(); render(); }
 }, 60000);
 
-loadWithCloudSync();
+render();
 </script>
 </body>
 </html>
