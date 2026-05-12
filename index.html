@@ -945,7 +945,11 @@ async function loadWithCloudSync() {
     if (!res.ok) { render(); return; }
     const { record } = await res.json();
     if (!record?.meta?.version) { render(); return; }
-    if ((record.updatedAt || 0) > (local.updatedAt || 0)) {
+    const localDays = Object.keys(local.daily || {}).length;
+    const cloudDays = Object.keys(record.daily || {}).length;
+    const shouldUseCloud = cloudDays > localDays ||
+      (cloudDays === localDays && (record.updatedAt || 0) > (local.updatedAt || 0));
+    if (shouldUseCloud) {
       _cachedData = record;
       localStorage.setItem('earth-online-v2', JSON.stringify(record));
     }
@@ -1027,6 +1031,9 @@ async function syncFromCloud() {
 }
 function syncToCloudSilent(data) {
   if (!SYNC_CONFIG.binId || !SYNC_CONFIG.apiKey) return;
+  const localDays = Object.keys(data.daily || {}).length;
+  if (localDays < 2) return;
+  if (!navigator.onLine) return;
   fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
     method: 'PUT',
     headers: {
