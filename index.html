@@ -1008,7 +1008,6 @@ async function syncFromCloud() {
   }
   try {
     document.getElementById('syncStatus').textContent = '拉取中...';
-    const localBackup = localStorage.getItem('earth-online-v2');
     const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
       headers: { 'X-Master-Key': SYNC_CONFIG.apiKey }
     });
@@ -1019,9 +1018,10 @@ async function syncFromCloud() {
       document.getElementById('syncStatus').textContent = '已取消';
       return;
     }
-    localStorage.setItem('earth-online-v2-backup', localBackup || '');
+    record.logs = record.logs || [];
+    record.logs.unshift({ date: getDateKey(), text: '⬇️ 从云端拉取了数据' });
     localStorage.setItem('earth-online-v2', JSON.stringify(record));
-    addLog('⬇️ 从云端拉取了数据');
+    _cachedData = null;
     document.getElementById('syncStatus').textContent = `已拉取 ${getDateKey()}`;
     render();
   } catch(e) {
